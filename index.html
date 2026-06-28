@@ -8,27 +8,28 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --pri:#2563EB;--pri-h:#1d4ed8;--pri-l:#eaf1ff;--pri-d:#1e3a8a;
-  --ok:#16a34a;--ok-l:#ecfdf3;--warn:#d97706;--warn-l:#fffbeb;--dng:#dc2626;--dng-l:#fef2f2;--mag:#d6177f;
-  --s0:#eceff4;--s1:#f6f8fb;--s2:#ffffff;
-  --t1:#0f172a;--t2:#5b6675;--t3:#94a3b8;
-  --b:rgba(15,23,42,.09);--bs:rgba(15,23,42,.16);
-  --r:9px;--font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--mono:ui-monospace,'SF Mono',Menlo,monospace;
-  --shadow:0 1px 2px rgba(15,23,42,.04),0 4px 16px rgba(15,23,42,.06);
+  --pri:#22d3ee;--pri-h:#38e0f5;--pri-l:rgba(34,211,238,.13);--pri-d:#67e8f9;
+  --ok:#34d399;--ok-l:rgba(52,211,153,.13);--warn:#fbbf24;--warn-l:rgba(251,191,36,.12);--dng:#f87171;--dng-l:rgba(248,113,113,.12);--mag:#f472b6;
+  --s0:#0a0b0e;--s1:#101319;--s2:#161a21;--s3:#1c212b;
+  --t1:#eef1f4;--t2:#97a1af;--t3:#5d6675;
+  --b:rgba(255,255,255,.08);--bs:rgba(255,255,255,.17);
+  --r:9px;--font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --glow:0 0 0 1px rgba(34,211,238,.3),0 0 16px rgba(34,211,238,.2);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.5);
 }
 html,body{height:100%}
-body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;flex-direction:column;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);color:var(--t1);display:flex;flex-direction:column;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;background:radial-gradient(1100px 560px at 78% -12%,rgba(34,211,238,.07),transparent 60%),radial-gradient(820px 480px at -8% 112%,rgba(34,211,238,.045),transparent 55%),var(--s0)}
 
 /* TOPBAR */
 .topbar{height:56px;display:flex;align-items:center;gap:14px;padding:0 18px;background:var(--s2);border-bottom:.5px solid var(--b);flex-shrink:0;z-index:30}
 .logo-wrap{display:flex;align-items:center;gap:9px;flex-shrink:0}
-.logo-mark{width:30px;height:30px;border-radius:8px;background:var(--pri);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;box-shadow:0 2px 6px rgba(37,99,235,.35)}
-.logo-txt{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.logo-mark{width:30px;height:30px;border-radius:8px;background:var(--pri);display:flex;align-items:center;justify-content:center;color:#04222a;font-size:17px;box-shadow:0 0 16px rgba(34,211,238,.5)}
+.logo-txt{font-size:16px;font-weight:700;letter-spacing:-.5px}
 .logo-txt span{color:var(--pri)}
 .areal-switch{display:flex;align-items:center;gap:8px;padding:6px 11px;border-radius:var(--r);border:.5px solid var(--b);background:var(--s1);cursor:pointer;transition:all .15s}
 .areal-switch:hover{border-color:var(--bs);background:var(--s2)}
@@ -37,7 +38,7 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 .areal-switch i{font-size:14px;color:var(--t3)}
 .sp{flex:1}
 .clock{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
-.clock .time{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.clock .time{font-size:13px;font-weight:600;font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--pri-d)}
 .clock .date{font-size:10px;color:var(--t3)}
 .lang{display:flex;gap:2px;padding:3px;border-radius:7px;background:var(--s1);border:.5px solid var(--b)}
 .lang button{border:none;background:none;font-family:var(--font);font-size:11px;font-weight:600;color:var(--t3);padding:3px 7px;border-radius:5px;cursor:pointer;transition:all .15s}
@@ -53,7 +54,7 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 .tab-bar{display:flex;background:var(--s0);border-radius:var(--r);padding:3px;gap:3px}
 .tab{flex:1;padding:8px;border-radius:7px;border:none;background:none;font-family:var(--font);font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
 .tab i{font-size:14px}
-.tab.on{background:var(--s2);color:var(--pri);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tab.on{background:var(--s2);color:var(--pri);box-shadow:0 0 0 1px rgba(34,211,238,.25),0 0 12px rgba(34,211,238,.12)}
 .pane{flex:1;display:flex;flex-direction:column;min-height:0}
 .pane[hidden]{display:none}
 
@@ -66,7 +67,7 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 .filters::-webkit-scrollbar{display:none}
 .fchip{flex-shrink:0;padding:5px 11px;border-radius:20px;border:.5px solid var(--b);background:var(--s1);font-size:11px;font-weight:500;color:var(--t2);cursor:pointer;white-space:nowrap;transition:all .15s}
 .fchip:hover{border-color:var(--bs)}
-.fchip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.fchip.on{background:var(--pri);border-color:var(--pri);color:#04222a;font-weight:600;box-shadow:0 0 12px rgba(34,211,238,.25)}
 .list-meta{padding:0 16px 8px;font-size:11px;color:var(--t3);display:flex;justify-content:space-between}
 .tenant-list{flex:1;overflow-y:auto;padding:0 10px 12px;scrollbar-width:thin}
 .tenant-list::-webkit-scrollbar{width:6px}.tenant-list::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
@@ -102,9 +103,9 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 .ebtn{width:100%;padding:9px;border-radius:7px;border:.5px solid var(--b);background:var(--s1);font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--t1);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;margin-bottom:8px}
 .ebtn:hover{background:var(--s0);border-color:var(--bs)}
 .ebtn i{font-size:15px}
-.ebtn.pri{background:var(--pri);border-color:var(--pri);color:#fff}.ebtn.pri:hover{background:var(--pri-h)}
-.ebtn.dng{background:var(--dng-l);border-color:rgba(220,38,38,.2);color:var(--dng)}.ebtn.dng:hover{background:#fde4e4}
-.ebtn.act{background:var(--pri);border-color:var(--pri);color:#fff;box-shadow:0 0 0 3px var(--pri-l)}
+.ebtn.pri{background:var(--pri);border-color:var(--pri);color:#04222a;box-shadow:0 0 12px rgba(34,211,238,.25)}.ebtn.pri:hover{background:var(--pri-h)}
+.ebtn.dng{background:var(--dng-l);border-color:rgba(248,113,113,.25);color:var(--dng)}.ebtn.dng:hover{background:rgba(248,113,113,.2)}
+.ebtn.act{background:var(--pri);border-color:var(--pri);color:#04222a;box-shadow:0 0 0 3px var(--pri-l),0 0 14px rgba(34,211,238,.3)}
 .ebtn-row{display:flex;gap:8px}.ebtn-row .ebtn{flex:1}
 .ed-hint{font-size:10.5px;color:var(--t3);line-height:1.5;margin-top:2px}
 .chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--t1);cursor:pointer;padding:6px 0}
@@ -120,7 +121,7 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 .mt{padding:14px 13px;font-family:var(--font);font-size:12.5px;font-weight:500;cursor:pointer;color:var(--t3);white-space:nowrap;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:6px}
 .mt i{font-size:14px}.mt:hover{color:var(--t2)}
 .mt.on{color:var(--pri);border-bottom-color:var(--pri)}
-.map-stage{flex:1;position:relative;overflow:hidden;background:#ccdcc0}
+.map-stage{flex:1;position:relative;overflow:hidden;background:#0a0f0e}
 .view{position:absolute;inset:0;display:none}.view.show{display:block}
 .view-floor{background:var(--s1)}
 .map-svg{width:100%;height:100%;display:block;touch-action:none}
@@ -131,21 +132,22 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 .zoom-ctrl button:hover{background:var(--s1);color:var(--t1)}
 .zoom-ctrl button+button{border-top:.5px solid var(--b)}
 
-.legend{position:absolute;bottom:14px;left:14px;background:rgba(255,255,255,.92);border:.5px solid var(--b);border-radius:var(--r);padding:11px 13px;display:flex;flex-direction:column;gap:8px;backdrop-filter:blur(10px);box-shadow:var(--shadow)}
+.legend{position:absolute;bottom:14px;left:14px;background:rgba(16,19,25,.88);border:.5px solid var(--b);border-radius:var(--r);padding:11px 13px;display:flex;flex-direction:column;gap:8px;backdrop-filter:blur(10px);box-shadow:var(--shadow)}
 .leg-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:1px}
 .leg-item{display:flex;align-items:center;gap:9px;font-size:11px;color:var(--t2);white-space:nowrap}
 .leg-dash{width:22px;height:0;border-top:3px dashed var(--ok)}
 .leg-dot{width:9px;height:9px;border-radius:50%}.leg-sq{width:13px;height:10px;border-radius:2px}
 
-.edit-banner{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--t1);color:#fff;border-radius:30px;padding:8px 16px;display:none;align-items:center;gap:9px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:6;font-size:12px;font-weight:500}
+.edit-banner{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#1b2029;color:#eef1f4;border:.5px solid var(--b);border-radius:30px;padding:8px 16px;display:none;align-items:center;gap:9px;box-shadow:0 6px 20px rgba(0,0,0,.5);z-index:6;font-size:12px;font-weight:500}
 .edit-banner.show{display:flex}
-.edit-banner i{font-size:15px}
-.edit-banner.act{background:var(--pri)}
+.edit-banner i{font-size:15px;color:var(--pri)}
+.edit-banner.act{background:var(--pri);color:#04222a;border-color:var(--pri);box-shadow:0 0 18px rgba(34,211,238,.4)}
+.edit-banner.act i{color:#04222a}
 
 .floor-flag{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--s2);border:.5px solid var(--b);border-radius:30px;padding:7px 8px 7px 14px;display:none;align-items:center;gap:11px;box-shadow:var(--shadow);z-index:5}
 .floor-flag.show{display:flex}
 .floor-flag span{font-size:12px;color:var(--t2)}.floor-flag b{font-weight:600}
-.floor-flag button{border:none;background:var(--pri);color:#fff;font-family:var(--font);font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:20px;cursor:pointer}
+.floor-flag button{border:none;background:var(--pri);color:#04222a;font-family:var(--font);font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:20px;cursor:pointer}
 
 .doc-view{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:var(--s1);padding:24px}
 .doc-view.show{display:flex}
@@ -160,7 +162,7 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 .doc-actions{display:flex;gap:8px}
 .btn{flex:1;padding:9px;border-radius:var(--r);border:.5px solid var(--b);background:var(--s1);font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--t1);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
 .btn:hover{background:var(--s0);border-color:var(--bs)}.btn i{font-size:15px}
-.btn-pri{background:var(--pri);border-color:var(--pri);color:#fff}.btn-pri:hover{background:var(--pri-h)}
+.btn-pri{background:var(--pri);border-color:var(--pri);color:#04222a;box-shadow:0 0 12px rgba(34,211,238,.25)}.btn-pri:hover{background:var(--pri-h)}
 
 /* DETAIL */
 .detail{width:330px;flex-shrink:0;background:var(--s2);border-left:.5px solid var(--b);display:flex;flex-direction:column;min-height:0}
@@ -204,7 +206,7 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 .hours-row.today .hday{color:var(--pri)}.hours-row .htime{font-variant-numeric:tabular-nums}
 .hours-row .closed-t{color:var(--t3)}
 .vnote{display:flex;gap:10px;padding:12px 13px;background:var(--warn-l);border:.5px solid rgba(217,119,6,.2);border-radius:var(--r)}
-.vnote i{font-size:17px;color:var(--warn);flex-shrink:0}.vnote p{font-size:12px;color:#92561a;line-height:1.5}
+.vnote i{font-size:17px;color:var(--warn);flex-shrink:0}.vnote p{font-size:12px;color:#f3d39a;line-height:1.5}
 .qr-area{display:none;flex-direction:column;align-items:center;gap:10px;padding-top:14px}.qr-area.show{display:flex}
 .qr-box{padding:12px;background:#fff;border:.5px solid var(--b);border-radius:12px}
 .qr-cap{font-size:11px;color:var(--t3);text-align:center;line-height:1.5}
@@ -240,7 +242,7 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 <body>
 
 <header class="topbar">
-  <div class="logo-wrap"><div class="logo-mark"><i class="ti ti-route-2"></i></div><div class="logo-txt">Lots<span>e</span></div></div>
+  <div class="logo-wrap"><div class="logo-mark"><i class="ti ti-route-2"></i></div><div class="logo-txt">lots<span>e</span></div></div>
   <div class="areal-switch" onclick="toast('Multi-Areal: weitere Standorte in der Pro-Version')">
     <div><div class="as-label">Areal</div><div class="as-name">Sektor 10 <i class="ti ti-chevron-down"></i></div></div>
   </div>
@@ -353,20 +355,20 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
       <div class="view show" id="view-map">
         <svg class="map-svg" id="mapSvg" viewBox="0 0 760 470" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geländekarte">
           <g id="zoomG">
-            <rect x="-100" y="-100" width="960" height="670" fill="#c5d9b0"/>
-            <polygon points="-20,390 150,285 196,322 35,440 -20,440" fill="#b3a991"/>
-            <polygon points="-20,418 35,440 196,322 176,305 -20,390" fill="#a39a83"/>
-            <polygon points="540,-20 720,-20 780,50 780,120 660,18 548,12" fill="#b3a991"/>
-            <line x1="140" y1="290" x2="180" y2="318" stroke="#d8cd9f" stroke-width="2" stroke-dasharray="11,7" opacity=".6"/>
-            <circle cx="90" cy="370" r="26" fill="#a7cd85" opacity=".55"/><circle cx="62" cy="356" r="16" fill="#9bc079" opacity=".55"/>
-            <circle cx="680" cy="70" r="22" fill="#a7cd85" opacity=".5"/><circle cx="715" cy="52" r="13" fill="#9bc079" opacity=".5"/>
-            <polygon points="150,238 432,64 588,200 300,378" fill="#aec995" fill-opacity=".45" stroke="#2d7a42" stroke-width="2.5" stroke-dasharray="14,9"/>
-            <polygon points="186,272 438,104 580,224 322,392" fill="rgba(0,0,0,.1)"/>
-            <polygon points="174,262 430,94 572,214 316,382" fill="#717d7d"/>
-            <polygon points="174,262 430,94 462,116 206,284" fill="#7e8a8a"/>
-            <polygon points="430,94 572,214 576,232 434,112" fill="#5f6d6d"/>
-            <polyline points="174,262 430,94 572,214" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="1.5"/>
-            <g opacity=".32" fill="#bfe0ff">
+            <rect x="-100" y="-100" width="960" height="670" fill="#0c1110"/>
+            <polygon points="-20,390 150,285 196,322 35,440 -20,440" fill="#191e26"/>
+            <polygon points="-20,418 35,440 196,322 176,305 -20,390" fill="#141921"/>
+            <polygon points="540,-20 720,-20 780,50 780,120 660,18 548,12" fill="#191e26"/>
+            <line x1="140" y1="290" x2="180" y2="318" stroke="rgba(34,211,238,.3)" stroke-width="2" stroke-dasharray="11,7" opacity=".7"/>
+            <circle cx="90" cy="370" r="26" fill="#16271c" opacity=".7"/><circle cx="62" cy="356" r="16" fill="#1a2c20" opacity=".7"/>
+            <circle cx="680" cy="70" r="22" fill="#16271c" opacity=".6"/><circle cx="715" cy="52" r="13" fill="#1a2c20" opacity=".6"/>
+            <polygon points="150,238 432,64 588,200 300,378" fill="rgba(34,211,238,.05)" stroke="rgba(34,211,238,.4)" stroke-width="2.5" stroke-dasharray="14,9"/>
+            <polygon points="186,272 438,104 580,224 322,392" fill="rgba(0,0,0,.4)"/>
+            <polygon points="174,262 430,94 572,214 316,382" fill="#222731"/>
+            <polygon points="174,262 430,94 462,116 206,284" fill="#2a313c"/>
+            <polygon points="430,94 572,214 576,232 434,112" fill="#191e26"/>
+            <polyline points="174,262 430,94 572,214" fill="none" stroke="rgba(34,211,238,.22)" stroke-width="1.5"/>
+            <g opacity=".5" fill="rgba(34,211,238,.45)">
               <rect x="262" y="132" width="17" height="12" rx="1" transform="rotate(-33,270,138)"/>
               <rect x="298" y="117" width="17" height="12" rx="1" transform="rotate(-33,306,123)"/>
               <rect x="334" y="102" width="17" height="12" rx="1" transform="rotate(-33,342,108)"/>
@@ -375,26 +377,26 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
 
             <!-- VISITOR LAYER -->
             <g id="visitorLayer">
-              <path id="routeEl" d="" fill="none" stroke="var(--ok)" stroke-width="3.6" stroke-dasharray="14,9" stroke-linecap="round" class="route-path"/>
+              <path id="routeEl" d="" fill="none" stroke="var(--ok)" stroke-width="3.6" stroke-dasharray="14,9" stroke-linecap="round" class="route-path" style="filter:drop-shadow(0 0 6px rgba(52,211,153,.55))"/>
               <circle id="startDot" cx="0" cy="0" r="5.5" fill="var(--ok)" stroke="#fff" stroke-width="2"/>
               <g class="mgrp" transform="translate(560,408)" onclick="toast('Besucherparkplatz — 40 Plätze, kostenlos, Nordeinfahrt')">
-                <rect x="-62" y="-15" width="124" height="29" rx="14" fill="#fff" stroke="#e2e2e2" stroke-width=".5" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,.13))"/>
-                <circle cx="-43" cy="0" r="10.5" fill="#475569"/><text x="-43" y="4" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="Inter">P</text>
-                <text x="8" y="4" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155" font-family="Inter">Besucherparkplatz</text>
+                <rect x="-62" y="-15" width="124" height="29" rx="14" fill="#161a21" stroke="rgba(255,255,255,.14)" stroke-width=".7" style="filter:drop-shadow(0 3px 8px rgba(0,0,0,.5))"/>
+                <circle cx="-43" cy="0" r="10.5" fill="#64748b"/><text x="-43" y="4" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="Inter">P</text>
+                <text x="8" y="4" text-anchor="middle" font-size="10.5" font-weight="500" fill="#cfd6df" font-family="Inter">Besucherparkplatz</text>
               </g>
               <g class="mgrp" transform="translate(225,150)" onclick="toast('Rampe UG Nord — Anlieferung & Tiefgarage')">
-                <rect x="-52" y="-13" width="104" height="26" rx="13" fill="#fff" stroke="#eee" stroke-width=".5" style="filter:drop-shadow(0 2px 5px rgba(0,0,0,.12))"/>
-                <circle cx="-34" cy="0" r="8.5" fill="var(--dng)"/><text x="-34" y="3.5" text-anchor="middle" font-size="10" fill="#fff" font-family="Inter">↓</text>
-                <text x="7" y="3.5" text-anchor="middle" font-size="9.5" font-weight="500" fill="#334155" font-family="Inter">Rampe UG Nord</text>
+                <rect x="-52" y="-13" width="104" height="26" rx="13" fill="#161a21" stroke="rgba(255,255,255,.14)" stroke-width=".7" style="filter:drop-shadow(0 3px 7px rgba(0,0,0,.5))"/>
+                <circle cx="-34" cy="0" r="8.5" fill="var(--dng)"/><text x="-34" y="3.5" text-anchor="middle" font-size="10" fill="#2a0808" font-family="Inter">↓</text>
+                <text x="7" y="3.5" text-anchor="middle" font-size="9.5" font-weight="500" fill="#cfd6df" font-family="Inter">Rampe UG Nord</text>
               </g>
               <g class="mgrp" transform="translate(450,330)" onclick="toast('Notfall-Sammelplatz — bei Alarm hier einfinden')">
-                <rect x="-15" y="-15" width="30" height="30" rx="7" fill="var(--ok)" style="filter:drop-shadow(0 2px 5px rgba(0,0,0,.18))"/>
-                <text x="0" y="5" text-anchor="middle" font-size="15" fill="#fff" font-family="Inter">⛬</text>
+                <rect x="-15" y="-15" width="30" height="30" rx="7" fill="var(--ok)" style="filter:drop-shadow(0 0 12px rgba(52,211,153,.5))"/>
+                <text x="0" y="5" text-anchor="middle" font-size="15" fill="#04241a" font-family="Inter">⛬</text>
               </g>
               <g class="mgrp" id="tenantM" transform="translate(330,210)">
-                <rect id="tenantPill" x="-60" y="-15" width="120" height="30" rx="15" fill="#fff" stroke="var(--pri)" stroke-width="1.8" style="filter:drop-shadow(0 3px 8px rgba(37,99,235,.25))"/>
+                <rect id="tenantPill" x="-60" y="-15" width="120" height="30" rx="15" fill="#161a21" stroke="var(--pri)" stroke-width="1.6" style="filter:drop-shadow(0 0 14px rgba(34,211,238,.4))"/>
                 <circle id="tenantCircle" cx="-44" cy="0" r="9" fill="var(--pri)"/>
-                <text id="tenantMTxt" x="-44" y="3.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Inter">RS</text>
+                <text id="tenantMTxt" x="-44" y="3.5" text-anchor="middle" font-size="10" font-weight="700" fill="#04222a" font-family="Inter">RS</text>
                 <text id="tenantTxt" x="-30" y="3.5" text-anchor="start" font-size="10" font-weight="600" fill="var(--pri-d)" font-family="Inter">R. Steiner AG</text>
               </g>
             </g>
@@ -403,9 +405,9 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
             <g id="editLayer" style="display:none"></g>
 
             <g transform="translate(715,42)">
-              <circle r="20" fill="rgba(255,255,255,.85)" stroke="rgba(0,0,0,.08)" stroke-width=".5"/>
+              <circle r="20" fill="rgba(18,22,29,.9)" stroke="rgba(255,255,255,.12)" stroke-width=".5"/>
               <text x="0" y="-5" text-anchor="middle" font-size="10" font-weight="700" fill="var(--dng)" font-family="Inter">N</text>
-              <polygon points="0,-15 3.5,-3 0,-6 -3.5,-3" fill="var(--dng)"/><polygon points="0,15 3.5,3 0,6 -3.5,3" fill="#bbb"/>
+              <polygon points="0,-15 3.5,-3 0,-6 -3.5,-3" fill="var(--dng)"/><polygon points="0,15 3.5,3 0,6 -3.5,3" fill="#5d6675"/>
             </g>
           </g>
         </svg>
@@ -481,7 +483,7 @@ body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;f
   <div class="sbi live-pill"><span class="ld"></span>Live · Daten aktuell</div>
 </footer>
 
-<div id="toast" style="position:fixed;bottom:54px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t1);color:#fff;padding:11px 18px;border-radius:10px;font-size:12.5px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:100;box-shadow:0 8px 30px rgba(0,0,0,.25);max-width:90%;text-align:center"></div>
+<div id="toast" style="position:fixed;bottom:54px;left:50%;transform:translateX(-50%) translateY(20px);background:#1b2029;color:#eef1f4;padding:11px 18px;border-radius:10px;border:.5px solid rgba(34,211,238,.3);font-size:12.5px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:100;box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 18px rgba(34,211,238,.15);max-width:90%;text-align:center"></div>
 
 <script>
 /* ========== VISITOR DATA ========== */
@@ -548,14 +550,14 @@ function updateMap(){
 
 /* ========== FLOOR PLANS ========== */
 const FLOORS={ug:{title:'Untergeschoss',rooms:[{x:70,y:60,w:400,h:120,label:'Tiefgarage',sub:'48 Stellplätze',type:'park'},{x:70,y:200,w:120,h:150,label:'Lager A',sub:'Logistik'},{x:200,y:200,w:120,h:150,label:'Lager B',sub:'Archiv'},{x:330,y:200,w:140,h:90,label:'Technikzentrale',sub:'Haustechnik',type:'tech'},{x:330,y:300,w:140,h:50,label:'Rampe UG Nord',sub:'Anlieferung',type:'ramp'},{x:490,y:60,w:200,h:290,label:'Lager C',sub:'Hochregal'}]},eg:{title:'Erdgeschoss',rooms:[{x:70,y:60,w:180,h:130,label:'Kanalfrei AG',sub:'N-04',tid:0},{x:260,y:60,w:200,h:130,label:'Vogt Präzision AG',sub:'S-07',tid:2},{x:470,y:60,w:220,h:130,label:'Werkstatt Brunner',sub:'Lager EG'},{x:70,y:240,w:180,h:130,label:'R. Steiner AG',sub:'B-12',tid:1},{x:300,y:240,w:160,h:130,label:'Foyer & Empfang',sub:'Eingang West',type:'foyer'},{x:470,y:240,w:220,h:130,label:'Wareneingang',sub:'Tor 3 / Tor 4'}]},og:{title:'1. Obergeschoss',rooms:[{x:70,y:60,w:180,h:130,label:'Brunner Elektro AG',sub:'N-17',tid:7},{x:260,y:60,w:200,h:130,label:'Lehner Versand AG',sub:'O-14',tid:4},{x:470,y:60,w:220,h:130,label:'Paul Lüthi AG',sub:'O-21',tid:3},{x:70,y:240,w:230,h:130,label:'Nordwand Sport AG',sub:'W-08',tid:6},{x:310,y:240,w:150,h:130,label:'Galerie & Lounge',sub:'Aufenthalt',type:'foyer'},{x:470,y:240,w:220,h:130,label:'Meridian Software',sub:'S-30',tid:5}]}};
-function roomFill(r,a){if(a)return'#dbe7ff';if(r.type==='foyer')return'#eef6ee';if(r.type==='tech')return'#fdf3e7';if(r.type==='park')return'#eef1f5';if(r.type==='ramp')return'#fdeaea';if(r.tid!=null)return'#fff';return'#f3f5f8';}
+function roomFill(r,a){if(a)return'rgba(34,211,238,.15)';if(r.type==='foyer')return'rgba(52,211,153,.1)';if(r.type==='tech')return'rgba(251,191,36,.1)';if(r.type==='park')return'#0e1218';if(r.type==='ramp')return'rgba(248,113,113,.1)';if(r.tid!=null)return'#161a22';return'#12161d';}
 function buildFloor(key){
   const f=FLOORS[key],el=document.getElementById('view-'+key);
-  let svg=`<svg class="map-svg" viewBox="0 0 760 430" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grundriss ${f.title}"><rect width="760" height="430" fill="#f6f8fb"/><rect x="60" y="50" width="640" height="330" rx="6" fill="#fff" stroke="#cbd3df" stroke-width="2"/><rect x="60" y="195" width="640" height="40" fill="#eef1f5"/><text x="380" y="220" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="Inter" letter-spacing="2">K O R R I D O R</text>`;
-  f.rooms.forEach(r=>{const a=r.tid===sel;svg+=`<g class="mgrp" ${r.tid!=null?`onclick="pick(${r.tid})"`:''}><rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="5" fill="${roomFill(r,a)}" stroke="${a?'#2563EB':'#d4dae4'}" stroke-width="${a?2.5:1}"/><text x="${r.x+12}" y="${r.y+24}" font-size="13" font-weight="600" fill="${a?'#1e3a8a':'#334155'}" font-family="Inter">${r.label}</text><text x="${r.x+12}" y="${r.y+41}" font-size="10.5" fill="${a?'#2563EB':'#94a3b8'}" font-family="Inter">${r.sub}</text>`;if(r.type==='park'){for(let i=0;i<8;i++)svg+=`<rect x="${r.x+18+i*46}" y="${r.y+58}" width="36" height="46" rx="3" fill="none" stroke="#cbd3df"/>`;}if(a)svg+=`<g transform="translate(${r.x+r.w-26},${r.y+24})"><circle r="13" fill="#2563EB"/><text y="5" text-anchor="middle" font-size="14" fill="#fff" font-family="Inter">★</text></g>`;svg+=`</g>`;});
-  svg+=`<g transform="translate(330,300)"><rect width="46" height="62" rx="4" fill="#fff" stroke="#cbd3df" stroke-width="1.2"/><line x1="0" y1="12" x2="46" y2="12" stroke="#cbd3df"/><line x1="0" y1="24" x2="46" y2="24" stroke="#cbd3df"/><line x1="0" y1="36" x2="46" y2="36" stroke="#cbd3df"/><line x1="0" y1="48" x2="46" y2="48" stroke="#cbd3df"/><text x="23" y="78" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="Inter">Treppe</text></g><g transform="translate(388,300)"><rect width="40" height="62" rx="4" fill="#eaf1ff" stroke="#2563EB" stroke-width="1.2"/><text x="20" y="38" text-anchor="middle" font-size="18" fill="#2563EB" font-family="Inter">⬍</text><text x="20" y="78" text-anchor="middle" font-size="9" fill="#2563EB" font-family="Inter">Aufzug A</text></g>`;
-  if(key==='eg')svg+=`<g transform="translate(380,392)"><polygon points="0,12 -8,-2 -3,-2 -3,-12 3,-12 3,-2 8,-2" fill="#16a34a"/><text x="20" y="6" font-size="10" fill="#16a34a" font-family="Inter" font-weight="600">Eingang West</text></g>`;
-  svg+=`<text x="74" y="40" font-size="11" font-weight="700" fill="#64748b" font-family="Inter" letter-spacing="1">${f.title.toUpperCase()}</text></svg>`;
+  let svg=`<svg class="map-svg" viewBox="0 0 760 430" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grundriss ${f.title}"><rect width="760" height="430" fill="#0c0f14"/><rect x="60" y="50" width="640" height="330" rx="6" fill="#12161d" stroke="rgba(255,255,255,.1)" stroke-width="2"/><rect x="60" y="195" width="640" height="40" fill="#0e1218"/><text x="380" y="220" text-anchor="middle" font-size="10" fill="#5d6675" font-family="Inter" letter-spacing="2">K O R R I D O R</text>`;
+  f.rooms.forEach(r=>{const a=r.tid===sel;svg+=`<g class="mgrp" ${r.tid!=null?`onclick="pick(${r.tid})"`:''}><rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="5" fill="${roomFill(r,a)}" stroke="${a?'#22d3ee':'rgba(255,255,255,.09)'}" stroke-width="${a?2.5:1}"${a?' style="filter:drop-shadow(0 0 10px rgba(34,211,238,.3))"':''}/><text x="${r.x+12}" y="${r.y+24}" font-size="13" font-weight="600" fill="${a?'#67e8f9':'#cfd6df'}" font-family="Inter">${r.label}</text><text x="${r.x+12}" y="${r.y+41}" font-size="10.5" fill="${a?'#22d3ee':'#6b7480'}" font-family="Inter">${r.sub}</text>`;if(r.type==='park'){for(let i=0;i<8;i++)svg+=`<rect x="${r.x+18+i*46}" y="${r.y+58}" width="36" height="46" rx="3" fill="none" stroke="rgba(255,255,255,.1)"/>`;}if(a)svg+=`<g transform="translate(${r.x+r.w-26},${r.y+24})"><circle r="13" fill="#22d3ee"/><text y="5" text-anchor="middle" font-size="14" fill="#04222a" font-family="Inter">★</text></g>`;svg+=`</g>`;});
+  svg+=`<g transform="translate(330,300)"><rect width="46" height="62" rx="4" fill="#12161d" stroke="rgba(255,255,255,.12)" stroke-width="1.2"/><line x1="0" y1="12" x2="46" y2="12" stroke="rgba(255,255,255,.1)"/><line x1="0" y1="24" x2="46" y2="24" stroke="rgba(255,255,255,.1)"/><line x1="0" y1="36" x2="46" y2="36" stroke="rgba(255,255,255,.1)"/><line x1="0" y1="48" x2="46" y2="48" stroke="rgba(255,255,255,.1)"/><text x="23" y="78" text-anchor="middle" font-size="9" fill="#5d6675" font-family="Inter">Treppe</text></g><g transform="translate(388,300)"><rect width="40" height="62" rx="4" fill="rgba(34,211,238,.1)" stroke="#22d3ee" stroke-width="1.2"/><text x="20" y="38" text-anchor="middle" font-size="18" fill="#22d3ee" font-family="Inter">⬍</text><text x="20" y="78" text-anchor="middle" font-size="9" fill="#22d3ee" font-family="Inter">Aufzug A</text></g>`;
+  if(key==='eg')svg+=`<g transform="translate(380,392)"><polygon points="0,12 -8,-2 -3,-2 -3,-12 3,-12 3,-2 8,-2" fill="#34d399"/><text x="20" y="6" font-size="10" fill="#34d399" font-family="Inter" font-weight="600">Eingang West</text></g>`;
+  svg+=`<text x="74" y="40" font-size="11" font-weight="700" fill="#97a1af" font-family="Inter" letter-spacing="1">${f.title.toUpperCase()}</text></svg>`;
   el.innerHTML=svg;
 }
 
@@ -583,22 +585,22 @@ function pick(id){sel=id;qrOpen=false;render();renderDetail();updateMap();if(['u
 function setLang(el,l){document.querySelectorAll('.lang button').forEach(b=>b.classList.remove('on'));el.classList.add('on');if(l!=='DE')toast(l+' — Übersetzung in dieser Demo nicht aktiv');}
 
 /* ========== EDITOR ========== */
-const MTYPE={mieter:{c:'#2563EB',ic:'⬢'},eingang:{c:'#16a34a',ic:'▸'},parkplatz:{c:'#475569',ic:'P'},rampe:{c:'#dc2626',ic:'↓'},wareneingang:{c:'#d97706',ic:'❒'},briefkasten:{c:'#7c3aed',ic:'✉'},sammelplatz:{c:'#0891b2',ic:'⛬'},sonstiges:{c:'#64748b',ic:'•'}};
-const PALETTE=['#2563EB','#16a34a','#dc2626','#d97706','#7c3aed','#0891b2','#d6177f','#475569'];
+const MTYPE={mieter:{c:'#22d3ee',ic:'⬢'},eingang:{c:'#34d399',ic:'▸'},parkplatz:{c:'#94a3b8',ic:'P'},rampe:{c:'#f87171',ic:'↓'},wareneingang:{c:'#fbbf24',ic:'❒'},briefkasten:{c:'#a78bfa',ic:'✉'},sammelplatz:{c:'#22d3ee',ic:'⛬'},sonstiges:{c:'#94a3b8',ic:'•'}};
+const PALETTE=['#22d3ee','#34d399','#f87171','#fbbf24','#a78bfa','#38bdf8','#f472b6','#94a3b8'];
 const LS_KEY='lotse_sektor10_v1';
 function seedData(){return{markers:[
-  {id:'m1',name:'Besucherparkplatz',type:'parkplatz',color:'#475569',x:74,y:88},
-  {id:'m2',name:'Rampe UG Nord',type:'rampe',color:'#dc2626',x:30,y:33},
-  {id:'m3',name:'Kanalfrei AG',type:'mieter',color:'#0891b2',x:50,y:35},
-  {id:'m4',name:'R. Steiner AG',type:'mieter',color:'#b45309',x:40,y:52},
-  {id:'m5',name:'Paul Lüthi AG',type:'mieter',color:'#16a34a',x:54,y:62},
-  {id:'m6',name:'Lehner Versand AG',type:'mieter',color:'#7c3aed',x:64,y:45},
-  {id:'m7',name:'Wareneingang Rampe EG',type:'wareneingang',color:'#d97706',x:71,y:55},
-  {id:'m8',name:'Briefkastenanlage',type:'briefkasten',color:'#7c3aed',x:67,y:61},
-  {id:'m9',name:'Eingang Büro EG Süd',type:'eingang',color:'#16a34a',x:60,y:67},
-  {id:'m10',name:'Notfall-Sammelplatz',type:'sammelplatz',color:'#0891b2',x:59,y:73}
+  {id:'m1',name:'Besucherparkplatz',type:'parkplatz',color:'#94a3b8',x:74,y:88},
+  {id:'m2',name:'Rampe UG Nord',type:'rampe',color:'#f87171',x:30,y:33},
+  {id:'m3',name:'Kanalfrei AG',type:'mieter',color:'#22d3ee',x:50,y:35},
+  {id:'m4',name:'R. Steiner AG',type:'mieter',color:'#fb923c',x:40,y:52},
+  {id:'m5',name:'Paul Lüthi AG',type:'mieter',color:'#34d399',x:54,y:62},
+  {id:'m6',name:'Lehner Versand AG',type:'mieter',color:'#a78bfa',x:64,y:45},
+  {id:'m7',name:'Wareneingang Rampe EG',type:'wareneingang',color:'#fbbf24',x:71,y:55},
+  {id:'m8',name:'Briefkastenanlage',type:'briefkasten',color:'#a78bfa',x:67,y:61},
+  {id:'m9',name:'Eingang Büro EG Süd',type:'eingang',color:'#34d399',x:60,y:67},
+  {id:'m10',name:'Notfall-Sammelplatz',type:'sammelplatz',color:'#38bdf8',x:59,y:73}
 ],paths:[
-  {id:'p1',name:'Besucherparkplatz → Lehner Versand AG',color:'#d6177f',target:'m6',points:[{x:74,y:88},{x:72,y:80},{x:70,y:66},{x:68,y:56}]}
+  {id:'p1',name:'Besucherparkplatz → Lehner Versand AG',color:'#f472b6',target:'m6',points:[{x:74,y:88},{x:72,y:80},{x:70,y:66},{x:68,y:56}]}
 ]};}
 let editData=seedData(),selMarkerId=null,activePathId=null,editTool='idle',onlyActive=false,drag=null;
 
@@ -620,11 +622,11 @@ function drawEditLayer(){
     if(p.target){const tm=mById(p.target);if(tm)pts.push({x:svgX(tm.x),y:svgY(tm.y)});}
     const act=p.id===activePathId;
     if(pts.length>=2)s+=`<polyline points="${pts.map(q=>q.x.toFixed(1)+','+q.y.toFixed(1)).join(' ')}" fill="none" stroke="${p.color}" stroke-width="4.5" stroke-dasharray="13,8" stroke-linecap="round" stroke-linejoin="round" opacity="${act?1:.45}"/>`;
-    if(act&&(editTool==='waypoint'||editTool==='markerWp'))p.points.forEach((pt,i)=>{s+=`<circle class="wp" data-i="${i}" cx="${svgX(pt.x)}" cy="${svgY(pt.y)}" r="7.5" fill="#fff" stroke="${p.color}" stroke-width="2.5"/>`;});
+    if(act&&(editTool==='waypoint'||editTool==='markerWp'))p.points.forEach((pt,i)=>{s+=`<circle class="wp" data-i="${i}" cx="${svgX(pt.x)}" cy="${svgY(pt.y)}" r="7.5" fill="#0c0f14" stroke="${p.color}" stroke-width="2.5"/>`;});
   });
   editData.markers.forEach(m=>{
     const t=MTYPE[m.type]||MTYPE.sonstiges,col=m.color||t.c,x=svgX(m.x),y=svgY(m.y),seld=m.id===selMarkerId;
-    s+=`<g class="emk" data-id="${m.id}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})">${seld?`<circle r="21" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="3,3" opacity=".8"/>`:''}<circle r="11" fill="${col}" stroke="#fff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))"/><text y="4" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Inter">${t.ic}</text><g transform="translate(15,0)"><rect x="0" y="-11" width="${m.name.length*6.1+14}" height="22" rx="11" fill="#fff" stroke="${col}" stroke-width="1.2" opacity=".97"/><text x="7" y="4" font-size="10.5" font-weight="600" fill="#0f172a" font-family="Inter">${m.name}</text></g></g>`;
+    s+=`<g class="emk" data-id="${m.id}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})">${seld?`<circle r="21" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="3,3" opacity=".8"/>`:''}<circle r="11" fill="${col}" stroke="#fff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))"/><text y="4" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Inter">${t.ic}</text><g transform="translate(15,0)"><rect x="0" y="-11" width="${m.name.length*6.1+14}" height="22" rx="11" fill="#161a21" stroke="${col}" stroke-width="1.2" opacity=".98"/><text x="7" y="4" font-size="10.5" font-weight="600" fill="#eef1f4" font-family="Inter">${m.name}</text></g></g>`;
   });
   L.innerHTML=s;
 }
@@ -661,7 +663,7 @@ function updateBanner(){
 function selectMarker(id){selMarkerId=id||null;drawEditLayer();renderEditor();}
 function updMarker(k,v){const m=mById(selMarkerId);if(!m)return;if(k==='x'||k==='y'){v=parseFloat(v);if(isNaN(v))return;v=Math.max(0,Math.min(100,v));}m[k]=v;drawEditLayer();saveData();if(k==='color'||k==='type')renderEditor();}
 function delMarker(){if(!selMarkerId)return;editData.markers=editData.markers.filter(m=>m.id!==selMarkerId);editData.paths.forEach(p=>{if(p.target===selMarkerId)p.target='';});selMarkerId=null;drawEditLayer();renderEditor();saveData();toast('Marker gelöscht');}
-function addMarkerAt(pct){const m={id:uid(),name:'Neuer Marker',type:'mieter',color:'#2563EB',x:+pct.x.toFixed(1),y:+pct.y.toFixed(1)};editData.markers.push(m);selMarkerId=m.id;editTool='idle';drawEditLayer();renderEditor();updateBanner();saveData();document.getElementById('mkName').focus();document.getElementById('mkName').select();}
+function addMarkerAt(pct){const m={id:uid(),name:'Neuer Marker',type:'mieter',color:'#22d3ee',x:+pct.x.toFixed(1),y:+pct.y.toFixed(1)};editData.markers.push(m);selMarkerId=m.id;editTool='idle';drawEditLayer();renderEditor();updateBanner();saveData();document.getElementById('mkName').focus();document.getElementById('mkName').select();}
 
 function newPath(){const p={id:pid(),name:'Neuer Weg',color:PALETTE[editData.paths.length%PALETTE.length],target:'',points:[]};editData.paths.push(p);activePathId=p.id;editTool='waypoint';drawEditLayer();renderEditor();updateBanner();saveData();}
 function selectPath(id){activePathId=id||null;drawEditLayer();renderEditor();}
