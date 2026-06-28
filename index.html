@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lotse · Besucherführung Sektor 10</title>
+<meta name="description" content="Lotse — digitale Besucherführung & Areal-Navigation mit visuellem Editor. Marker setzen, Wege zeichnen, Mieter finden.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pri:#2563EB;--pri-h:#1d4ed8;--pri-l:#eaf1ff;--pri-d:#1e3a8a;
+  --ok:#16a34a;--ok-l:#ecfdf3;--warn:#d97706;--warn-l:#fffbeb;--dng:#dc2626;--dng-l:#fef2f2;--mag:#d6177f;
+  --s0:#eceff4;--s1:#f6f8fb;--s2:#ffffff;
+  --t1:#0f172a;--t2:#5b6675;--t3:#94a3b8;
+  --b:rgba(15,23,42,.09);--bs:rgba(15,23,42,.16);
+  --r:9px;--font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--mono:ui-monospace,'SF Mono',Menlo,monospace;
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 4px 16px rgba(15,23,42,.06);
+}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--s0);color:var(--t1);display:flex;flex-direction:column;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* TOPBAR */
+.topbar{height:56px;display:flex;align-items:center;gap:14px;padding:0 18px;background:var(--s2);border-bottom:.5px solid var(--b);flex-shrink:0;z-index:30}
+.logo-wrap{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.logo-mark{width:30px;height:30px;border-radius:8px;background:var(--pri);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;box-shadow:0 2px 6px rgba(37,99,235,.35)}
+.logo-txt{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.logo-txt span{color:var(--pri)}
+.areal-switch{display:flex;align-items:center;gap:8px;padding:6px 11px;border-radius:var(--r);border:.5px solid var(--b);background:var(--s1);cursor:pointer;transition:all .15s}
+.areal-switch:hover{border-color:var(--bs);background:var(--s2)}
+.areal-switch .as-label{font-size:10px;color:var(--t3);line-height:1.1}
+.areal-switch .as-name{font-size:13px;font-weight:600;line-height:1.2;display:flex;align-items:center;gap:5px}
+.areal-switch i{font-size:14px;color:var(--t3)}
+.sp{flex:1}
+.clock{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
+.clock .time{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.clock .date{font-size:10px;color:var(--t3)}
+.lang{display:flex;gap:2px;padding:3px;border-radius:7px;background:var(--s1);border:.5px solid var(--b)}
+.lang button{border:none;background:none;font-family:var(--font);font-size:11px;font-weight:600;color:var(--t3);padding:3px 7px;border-radius:5px;cursor:pointer;transition:all .15s}
+.lang button.on{background:var(--s2);color:var(--pri);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.icon-btn{width:34px;height:34px;border-radius:8px;border:.5px solid var(--b);background:var(--s1);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .15s;flex-shrink:0}
+.icon-btn:hover{background:var(--s2);border-color:var(--bs);color:var(--t1)}
+
+.main{display:flex;flex:1;min-height:0}
+
+/* SIDEBAR */
+.sidebar{width:288px;flex-shrink:0;background:var(--s2);border-right:.5px solid var(--b);display:flex;flex-direction:column;min-height:0}
+.sb-top{padding:14px 14px 10px}
+.tab-bar{display:flex;background:var(--s0);border-radius:var(--r);padding:3px;gap:3px}
+.tab{flex:1;padding:8px;border-radius:7px;border:none;background:none;font-family:var(--font);font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.tab i{font-size:14px}
+.tab.on{background:var(--s2);color:var(--pri);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.pane{flex:1;display:flex;flex-direction:column;min-height:0}
+.pane[hidden]{display:none}
+
+/* visitor pane */
+.sb-search{margin:0 14px 10px;display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:var(--r);border:.5px solid var(--b);background:var(--s1);transition:all .15s}
+.sb-search:focus-within{border-color:var(--pri);background:var(--s2);box-shadow:0 0 0 3px var(--pri-l)}
+.sb-search i{font-size:15px;color:var(--t3);flex-shrink:0}
+.sb-search input{flex:1;border:none;background:none;outline:none;font-family:var(--font);font-size:13px;color:var(--t1)}
+.filters{display:flex;gap:6px;padding:0 14px 10px;overflow-x:auto;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.fchip{flex-shrink:0;padding:5px 11px;border-radius:20px;border:.5px solid var(--b);background:var(--s1);font-size:11px;font-weight:500;color:var(--t2);cursor:pointer;white-space:nowrap;transition:all .15s}
+.fchip:hover{border-color:var(--bs)}
+.fchip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.list-meta{padding:0 16px 8px;font-size:11px;color:var(--t3);display:flex;justify-content:space-between}
+.tenant-list{flex:1;overflow-y:auto;padding:0 10px 12px;scrollbar-width:thin}
+.tenant-list::-webkit-scrollbar{width:6px}.tenant-list::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+.tn-item{display:flex;align-items:center;gap:11px;padding:10px;border-radius:var(--r);cursor:pointer;border:1px solid transparent;transition:all .12s;margin-bottom:3px}
+.tn-item:hover{background:var(--s1)}
+.tn-item.on{background:var(--pri-l);border-color:rgba(37,99,235,.25)}
+.tn-badge{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:-.3px}
+.tn-info{flex:1;min-width:0}
+.tn-name{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tn-sub{font-size:11px;color:var(--t2);margin-top:2px;display:flex;align-items:center;gap:6px}
+.tn-sub .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.tn-floor{font-size:10px;color:var(--t3);font-weight:500;background:var(--s0);padding:2px 7px;border-radius:6px;flex-shrink:0}
+.tn-item.on .tn-floor{background:var(--s2)}
+.no-res{padding:30px 16px;text-align:center;color:var(--t3);font-size:13px}
+.no-res i{font-size:30px;display:block;margin-bottom:8px;color:var(--bs)}
+
+/* editor pane */
+.ed-scroll{flex:1;overflow-y:auto;padding:0 14px 16px;scrollbar-width:thin}
+.ed-scroll::-webkit-scrollbar{width:6px}.ed-scroll::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+.ed-block{padding:14px 0;border-bottom:.5px solid var(--b)}
+.ed-h{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:11px;display:flex;align-items:center;gap:7px}
+.ed-h .n{width:18px;height:18px;border-radius:50%;background:var(--pri);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.fld{margin-bottom:9px}
+.fld label{display:block;font-size:11px;color:var(--t2);margin-bottom:4px;font-weight:500}
+.fld input[type=text],.fld select{width:100%;padding:8px 10px;border-radius:7px;border:.5px solid var(--b);background:var(--s1);font-family:var(--font);font-size:12.5px;color:var(--t1);outline:none;transition:all .15s}
+.fld input[type=text]:focus,.fld select:focus{border-color:var(--pri);background:var(--s2);box-shadow:0 0 0 3px var(--pri-l)}
+.fld-row{display:flex;gap:8px}.fld-row .fld{flex:1}
+.swatches{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sw{width:22px;height:22px;border-radius:6px;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px var(--b);transition:transform .1s}
+.sw:hover{transform:scale(1.12)}
+.sw.on{box-shadow:0 0 0 2px var(--t1)}
+.sw-pick{width:22px;height:22px;border-radius:6px;border:.5px solid var(--b);padding:0;cursor:pointer;background:none}
+.ebtn{width:100%;padding:9px;border-radius:7px;border:.5px solid var(--b);background:var(--s1);font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--t1);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;margin-bottom:8px}
+.ebtn:hover{background:var(--s0);border-color:var(--bs)}
+.ebtn i{font-size:15px}
+.ebtn.pri{background:var(--pri);border-color:var(--pri);color:#fff}.ebtn.pri:hover{background:var(--pri-h)}
+.ebtn.dng{background:var(--dng-l);border-color:rgba(220,38,38,.2);color:var(--dng)}.ebtn.dng:hover{background:#fde4e4}
+.ebtn.act{background:var(--pri);border-color:var(--pri);color:#fff;box-shadow:0 0 0 3px var(--pri-l)}
+.ebtn-row{display:flex;gap:8px}.ebtn-row .ebtn{flex:1}
+.ed-hint{font-size:10.5px;color:var(--t3);line-height:1.5;margin-top:2px}
+.chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--t1);cursor:pointer;padding:6px 0}
+.chk input{width:16px;height:16px;accent-color:var(--pri);cursor:pointer}
+.save-ind{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ok);font-weight:500;padding:4px 0}
+.save-ind .d{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.cnt-pill{margin-left:auto;background:var(--s0);color:var(--t2);font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+
+/* CENTER */
+.center{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
+.map-tabs{display:flex;align-items:center;padding:0 14px;border-bottom:.5px solid var(--b);background:var(--s2);overflow-x:auto;flex-shrink:0;scrollbar-width:none}
+.map-tabs::-webkit-scrollbar{display:none}
+.mt{padding:14px 13px;font-family:var(--font);font-size:12.5px;font-weight:500;cursor:pointer;color:var(--t3);white-space:nowrap;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:6px}
+.mt i{font-size:14px}.mt:hover{color:var(--t2)}
+.mt.on{color:var(--pri);border-bottom-color:var(--pri)}
+.map-stage{flex:1;position:relative;overflow:hidden;background:#ccdcc0}
+.view{position:absolute;inset:0;display:none}.view.show{display:block}
+.view-floor{background:var(--s1)}
+.map-svg{width:100%;height:100%;display:block;touch-action:none}
+.map-svg.editing{cursor:crosshair}
+
+.zoom-ctrl{position:absolute;top:14px;right:14px;display:flex;flex-direction:column;gap:1px;background:var(--s2);border:.5px solid var(--b);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.zoom-ctrl button{width:34px;height:34px;border:none;background:var(--s2);color:var(--t2);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center}
+.zoom-ctrl button:hover{background:var(--s1);color:var(--t1)}
+.zoom-ctrl button+button{border-top:.5px solid var(--b)}
+
+.legend{position:absolute;bottom:14px;left:14px;background:rgba(255,255,255,.92);border:.5px solid var(--b);border-radius:var(--r);padding:11px 13px;display:flex;flex-direction:column;gap:8px;backdrop-filter:blur(10px);box-shadow:var(--shadow)}
+.leg-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:1px}
+.leg-item{display:flex;align-items:center;gap:9px;font-size:11px;color:var(--t2);white-space:nowrap}
+.leg-dash{width:22px;height:0;border-top:3px dashed var(--ok)}
+.leg-dot{width:9px;height:9px;border-radius:50%}.leg-sq{width:13px;height:10px;border-radius:2px}
+
+.edit-banner{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--t1);color:#fff;border-radius:30px;padding:8px 16px;display:none;align-items:center;gap:9px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:6;font-size:12px;font-weight:500}
+.edit-banner.show{display:flex}
+.edit-banner i{font-size:15px}
+.edit-banner.act{background:var(--pri)}
+
+.floor-flag{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--s2);border:.5px solid var(--b);border-radius:30px;padding:7px 8px 7px 14px;display:none;align-items:center;gap:11px;box-shadow:var(--shadow);z-index:5}
+.floor-flag.show{display:flex}
+.floor-flag span{font-size:12px;color:var(--t2)}.floor-flag b{font-weight:600}
+.floor-flag button{border:none;background:var(--pri);color:#fff;font-family:var(--font);font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:20px;cursor:pointer}
+
+.doc-view{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:var(--s1);padding:24px}
+.doc-view.show{display:flex}
+.doc-card{width:min(380px,90%);background:var(--s2);border:.5px solid var(--b);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.doc-thumb{height:170px;background:var(--s0);position:relative;display:flex;align-items:center;justify-content:center;border-bottom:.5px solid var(--b)}
+.doc-thumb i{font-size:54px;color:var(--bs)}
+.doc-badge{position:absolute;top:12px;left:12px;background:var(--dng);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px}
+.doc-body{padding:16px}.doc-body h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.doc-body p{font-size:12.5px;color:var(--t2);line-height:1.5;margin-bottom:14px}
+.doc-meta{display:flex;gap:16px;margin-bottom:14px}.doc-meta div{font-size:11px;color:var(--t3)}
+.doc-meta b{display:block;font-size:12.5px;color:var(--t1);margin-top:1px}
+.doc-actions{display:flex;gap:8px}
+.btn{flex:1;padding:9px;border-radius:var(--r);border:.5px solid var(--b);background:var(--s1);font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--t1);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.btn:hover{background:var(--s0);border-color:var(--bs)}.btn i{font-size:15px}
+.btn-pri{background:var(--pri);border-color:var(--pri);color:#fff}.btn-pri:hover{background:var(--pri-h)}
+
+/* DETAIL */
+.detail{width:330px;flex-shrink:0;background:var(--s2);border-left:.5px solid var(--b);display:flex;flex-direction:column;min-height:0}
+.detail[hidden]{display:none}
+.dt-scroll{flex:1;overflow-y:auto;scrollbar-width:thin}
+.dt-scroll::-webkit-scrollbar{width:6px}.dt-scroll::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+.dt-head{padding:18px 18px 16px;border-bottom:.5px solid var(--b)}
+.dt-badge-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.dt-badge{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:-.5px}
+.dt-title{flex:1;min-width:0}.dt-title h2{font-size:17px;font-weight:700;letter-spacing:-.3px;line-height:1.25}
+.dt-cat{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--t2);margin-top:4px}.dt-cat i{font-size:13px}
+.dt-status{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;font-size:11.5px;font-weight:600}
+.dt-status.open{background:var(--ok-l);color:var(--ok)}.dt-status.closed{background:var(--s0);color:var(--t2)}
+.dt-status .pulse{width:7px;height:7px;border-radius:50%;background:currentColor}
+.dt-status.open .pulse{animation:gp 2s infinite}
+@keyframes gp{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}60%{box-shadow:0 0 0 5px rgba(22,163,74,0)}}
+.dt-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b);border-top:.5px solid var(--b);border-bottom:.5px solid var(--b)}
+.dstat{background:var(--s2);padding:13px 16px}
+.dstat .l{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:5px;margin-bottom:5px}.dstat .l i{font-size:13px}
+.dstat .v{font-size:14px;font-weight:600}.dstat .v small{font-weight:500;color:var(--t2);font-size:11px}
+.dt-sec{padding:16px 18px;border-bottom:.5px solid var(--b)}
+.dt-sec-title{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:13px;display:flex;align-items:center;justify-content:space-between}
+.dt-sec-title .badge{background:var(--pri-l);color:var(--pri);font-size:10px;padding:2px 7px;border-radius:10px;letter-spacing:0}
+.steps{position:relative}
+.step{display:flex;gap:12px;padding-bottom:16px;position:relative}.step:last-child{padding-bottom:0}
+.step::before{content:'';position:absolute;left:13px;top:28px;bottom:-2px;width:2px;background:var(--b)}.step:last-child::before{display:none}
+.step-ic{width:28px;height:28px;border-radius:50%;background:var(--s1);border:.5px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--t2);flex-shrink:0;z-index:1}
+.step.start .step-ic{background:var(--ok-l);border-color:var(--ok);color:var(--ok)}
+.step.end .step-ic{background:var(--pri);border-color:var(--pri);color:#fff}
+.step-tx{flex:1;padding-top:4px}.step-tx .st-main{font-size:13px;line-height:1.4}
+.step-tx .st-meta{font-size:11px;color:var(--t3);margin-top:2px;display:flex;align-items:center;gap:5px}.step-tx .st-meta i{font-size:12px}
+.crow{display:flex;align-items:center;gap:11px;padding:9px 0;text-decoration:none;color:inherit;transition:color .12s}
+.crow:hover{color:var(--pri)}.crow+.crow{border-top:.5px solid var(--b)}
+.crow-ic{width:32px;height:32px;border-radius:8px;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--t2);flex-shrink:0}
+.crow:hover .crow-ic{background:var(--pri-l);color:var(--pri)}
+.crow-tx{flex:1;min-width:0}.crow-tx .cl{font-size:10px;color:var(--t3)}
+.crow-tx .cv{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crow:hover .cv{color:var(--pri)}.crow-arr{font-size:14px;color:var(--t3)}
+.hours-row{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0}
+.hours-row.today{font-weight:600;color:var(--pri)}.hours-row .hday{color:var(--t2)}
+.hours-row.today .hday{color:var(--pri)}.hours-row .htime{font-variant-numeric:tabular-nums}
+.hours-row .closed-t{color:var(--t3)}
+.vnote{display:flex;gap:10px;padding:12px 13px;background:var(--warn-l);border:.5px solid rgba(217,119,6,.2);border-radius:var(--r)}
+.vnote i{font-size:17px;color:var(--warn);flex-shrink:0}.vnote p{font-size:12px;color:#92561a;line-height:1.5}
+.qr-area{display:none;flex-direction:column;align-items:center;gap:10px;padding-top:14px}.qr-area.show{display:flex}
+.qr-box{padding:12px;background:#fff;border:.5px solid var(--b);border-radius:12px}
+.qr-cap{font-size:11px;color:var(--t3);text-align:center;line-height:1.5}
+.dt-foot{padding:12px 16px;border-top:.5px solid var(--b);display:flex;gap:8px;flex-shrink:0}
+
+/* BOTTOM */
+.statusbar{height:38px;flex-shrink:0;background:var(--s2);border-top:.5px solid var(--b);display:flex;align-items:center;padding:0 18px;gap:18px;font-size:11.5px;color:var(--t2);z-index:20}
+.sbi{display:flex;align-items:center;gap:7px;white-space:nowrap}.sbi i{font-size:14px}
+.sbi.emerg{color:var(--dng)}.sbi.emerg i{color:var(--dng)}
+.sb-sep{width:1px;height:16px;background:var(--b)}
+.sbi a{color:inherit;text-decoration:none}.sbi a:hover{color:var(--pri)}
+.live-pill{display:flex;align-items:center;gap:6px;color:var(--ok);font-weight:600}
+.live-pill .ld{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:gp 2s infinite}
+
+@media(max-width:1180px){.detail{width:300px}.sidebar{width:268px}}
+@media(max-width:1024px){
+  body{overflow:auto;height:auto;min-height:100vh}
+  .main{flex-direction:column;flex:none}
+  .sidebar{width:100%;border-right:none;border-bottom:.5px solid var(--b)}
+  .tenant-list{max-height:230px}.ed-scroll{max-height:340px}
+  .center{min-height:480px}.map-stage{min-height:440px}
+  .detail{width:100%;border-left:none;border-top:.5px solid var(--b)}
+  .dt-scroll{max-height:none;overflow:visible}
+  .statusbar{height:auto;padding:10px 18px;flex-wrap:wrap;row-gap:8px}
+}
+@media(max-width:560px){
+  .topbar{padding:0 12px;gap:9px}.logo-txt,.clock .date{display:none}.areal-switch .as-label{display:none}.lang{display:none}
+  .map-tabs .mt span.lbl{display:none}.map-tabs .mt{padding:13px 11px}.legend{display:none}.sb-sep{display:none}
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo-wrap"><div class="logo-mark"><i class="ti ti-route-2"></i></div><div class="logo-txt">Lots<span>e</span></div></div>
+  <div class="areal-switch" onclick="toast('Multi-Areal: weitere Standorte in der Pro-Version')">
+    <div><div class="as-label">Areal</div><div class="as-name">Sektor 10 <i class="ti ti-chevron-down"></i></div></div>
+  </div>
+  <div class="sp"></div>
+  <div class="lang" role="group" aria-label="Sprache">
+    <button class="on" onclick="setLang(this,'DE')">DE</button>
+    <button onclick="setLang(this,'EN')">EN</button>
+    <button onclick="setLang(this,'FR')">FR</button>
+  </div>
+  <div class="clock"><div class="time" id="clockTime">––:––</div><div class="date" id="clockDate">–</div></div>
+  <button class="icon-btn" onclick="toast('Lotse — Mieter wählen für den Weg, oder Tab „Editor“ für Marker & Wege.')" aria-label="Hilfe"><i class="ti ti-help"></i></button>
+</header>
+
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="tab-bar" role="tablist">
+        <button class="tab on" id="tabVisitor" role="tab" onclick="setMode('visitor')"><i class="ti ti-eye"></i>Besucher</button>
+        <button class="tab" id="tabEdit" role="tab" onclick="setMode('edit')"><i class="ti ti-pencil"></i>Editor</button>
+      </div>
+    </div>
+
+    <!-- VISITOR PANE -->
+    <div class="pane" id="visitorPane">
+      <div class="sb-search"><i class="ti ti-search"></i><input id="searchInput" type="text" placeholder="Mieter, Branche oder Etage…" oninput="render()"></div>
+      <div class="filters" id="filterRow"></div>
+      <div class="list-meta"><span id="resCount">8 Mieter</span><span id="openCount"></span></div>
+      <div class="tenant-list" id="tenantList" role="list"></div>
+    </div>
+
+    <!-- EDITOR PANE -->
+    <div class="pane" id="editorPane" hidden>
+      <div class="ed-scroll">
+
+        <div class="ed-block">
+          <div class="ed-h"><span class="n">1</span>Marker<span class="cnt-pill" id="mkCount">0</span></div>
+          <button class="ebtn" id="btnPlace" onclick="toolToggle('place')"><i class="ti ti-map-pin-plus"></i>Neuen Marker setzen</button>
+          <div class="fld">
+            <label>Marker auswählen</label>
+            <select id="mkSelect" onchange="selectMarker(this.value)"></select>
+          </div>
+          <div class="fld"><label>Name</label><input type="text" id="mkName" oninput="updMarker('name',this.value)"></div>
+          <div class="fld-row">
+            <div class="fld"><label>Typ</label>
+              <select id="mkType" onchange="updMarker('type',this.value)">
+                <option value="mieter">Mieter</option><option value="eingang">Eingang</option>
+                <option value="parkplatz">Parkplatz</option><option value="rampe">Rampe</option>
+                <option value="wareneingang">Wareneingang</option><option value="briefkasten">Briefkasten</option>
+                <option value="sammelplatz">Sammelplatz</option><option value="sonstiges">Sonstiges</option>
+              </select>
+            </div>
+          </div>
+          <div class="fld"><label>Farbe</label><div class="swatches" id="mkSwatches"></div></div>
+          <div class="fld-row">
+            <div class="fld"><label>X %</label><input type="text" id="mkX" oninput="updMarker('x',this.value)"></div>
+            <div class="fld"><label>Y %</label><input type="text" id="mkY" oninput="updMarker('y',this.value)"></div>
+          </div>
+          <button class="ebtn dng" onclick="delMarker()"><i class="ti ti-trash"></i>Marker löschen</button>
+          <div class="ed-hint">Tipp: „Neuen Marker setzen“ → auf die Karte klicken. Vorhandene Marker lassen sich direkt ziehen.</div>
+        </div>
+
+        <div class="ed-block">
+          <div class="ed-h"><span class="n">2</span>Wege<span class="cnt-pill" id="pCount">0</span></div>
+          <div class="fld"><label>Weg auswählen</label><select id="pSelect" onchange="selectPath(this.value)"></select></div>
+          <button class="ebtn" onclick="newPath()"><i class="ti ti-plus"></i>Neuer Weg</button>
+          <div class="fld"><label>Wegname</label><input type="text" id="pName" oninput="updPath('name',this.value)"></div>
+          <div class="fld"><label>Ziel verbinden mit</label><select id="pTarget" onchange="updPath('target',this.value)"></select></div>
+          <div class="fld"><label>Farbe</label><div class="swatches" id="pSwatches"></div></div>
+          <div class="ebtn-row">
+            <button class="ebtn" id="btnWaypoint" onclick="toolToggle('waypoint')"><i class="ti ti-vector"></i>Wegpunkte</button>
+            <button class="ebtn" id="btnMkWp" onclick="toolToggle('markerWp')"><i class="ti ti-pin"></i>Marker</button>
+          </div>
+          <div class="ebtn-row">
+            <button class="ebtn" onclick="undoWaypoint()"><i class="ti ti-arrow-back-up"></i>Punkt zurück</button>
+            <button class="ebtn dng" onclick="delPath()"><i class="ti ti-trash"></i>Weg</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="onlyActive" onchange="onlyActiveToggle(this.checked)">Nur aktiven Weg zeigen</label>
+          <div class="ed-hint">„Wegpunkte“ aktivieren und auf die Karte klicken. „Marker“ aktivieren und einen Marker anklicken, um ihn als Wegpunkt zu setzen.</div>
+        </div>
+
+        <div class="ed-block" style="border-bottom:none">
+          <div class="ed-h"><span class="n">3</span>Speichern & Export</div>
+          <div class="save-ind"><span class="d"></span><span id="saveTxt">Automatisch gespeichert</span></div>
+          <div class="ebtn-row">
+            <button class="ebtn pri" onclick="exportJSON()"><i class="ti ti-download"></i>JSON</button>
+            <button class="ebtn" onclick="document.getElementById('importFile').click()"><i class="ti ti-upload"></i>Import</button>
+          </div>
+          <input type="file" id="importFile" accept="application/json" hidden onchange="importJSON(this.files[0])">
+          <button class="ebtn dng" onclick="resetData()"><i class="ti ti-refresh"></i>Auf Standard zurücksetzen</button>
+        </div>
+
+      </div>
+    </div>
+  </aside>
+
+  <!-- CENTER -->
+  <section class="center">
+    <div class="map-tabs" role="tablist">
+      <button class="mt on" role="tab" data-view="map" onclick="setView(this,'map')"><i class="ti ti-map-2"></i><span class="lbl">Karte</span></button>
+      <button class="mt" role="tab" data-view="ug" onclick="setView(this,'ug')"><i class="ti ti-stairs-down"></i><span class="lbl">UG</span></button>
+      <button class="mt" role="tab" data-view="eg" onclick="setView(this,'eg')"><i class="ti ti-building"></i><span class="lbl">EG</span></button>
+      <button class="mt" role="tab" data-view="og" onclick="setView(this,'og')"><i class="ti ti-stairs-up"></i><span class="lbl">1. OG</span></button>
+      <button class="mt" role="tab" data-view="pdf" onclick="setView(this,'pdf')"><i class="ti ti-file-type-pdf"></i><span class="lbl">Umgebung</span></button>
+      <button class="mt" role="tab" data-view="fac" onclick="setView(this,'fac')"><i class="ti ti-building-arch"></i><span class="lbl">Fassaden</span></button>
+    </div>
+
+    <div class="map-stage" id="mapStage">
+      <div class="view show" id="view-map">
+        <svg class="map-svg" id="mapSvg" viewBox="0 0 760 470" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Geländekarte">
+          <g id="zoomG">
+            <rect x="-100" y="-100" width="960" height="670" fill="#c5d9b0"/>
+            <polygon points="-20,390 150,285 196,322 35,440 -20,440" fill="#b3a991"/>
+            <polygon points="-20,418 35,440 196,322 176,305 -20,390" fill="#a39a83"/>
+            <polygon points="540,-20 720,-20 780,50 780,120 660,18 548,12" fill="#b3a991"/>
+            <line x1="140" y1="290" x2="180" y2="318" stroke="#d8cd9f" stroke-width="2" stroke-dasharray="11,7" opacity=".6"/>
+            <circle cx="90" cy="370" r="26" fill="#a7cd85" opacity=".55"/><circle cx="62" cy="356" r="16" fill="#9bc079" opacity=".55"/>
+            <circle cx="680" cy="70" r="22" fill="#a7cd85" opacity=".5"/><circle cx="715" cy="52" r="13" fill="#9bc079" opacity=".5"/>
+            <polygon points="150,238 432,64 588,200 300,378" fill="#aec995" fill-opacity=".45" stroke="#2d7a42" stroke-width="2.5" stroke-dasharray="14,9"/>
+            <polygon points="186,272 438,104 580,224 322,392" fill="rgba(0,0,0,.1)"/>
+            <polygon points="174,262 430,94 572,214 316,382" fill="#717d7d"/>
+            <polygon points="174,262 430,94 462,116 206,284" fill="#7e8a8a"/>
+            <polygon points="430,94 572,214 576,232 434,112" fill="#5f6d6d"/>
+            <polyline points="174,262 430,94 572,214" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="1.5"/>
+            <g opacity=".32" fill="#bfe0ff">
+              <rect x="262" y="132" width="17" height="12" rx="1" transform="rotate(-33,270,138)"/>
+              <rect x="298" y="117" width="17" height="12" rx="1" transform="rotate(-33,306,123)"/>
+              <rect x="334" y="102" width="17" height="12" rx="1" transform="rotate(-33,342,108)"/>
+              <rect x="259" y="155" width="17" height="12" rx="1" transform="rotate(-33,267,161)"/>
+            </g>
+
+            <!-- VISITOR LAYER -->
+            <g id="visitorLayer">
+              <path id="routeEl" d="" fill="none" stroke="var(--ok)" stroke-width="3.6" stroke-dasharray="14,9" stroke-linecap="round" class="route-path"/>
+              <circle id="startDot" cx="0" cy="0" r="5.5" fill="var(--ok)" stroke="#fff" stroke-width="2"/>
+              <g class="mgrp" transform="translate(560,408)" onclick="toast('Besucherparkplatz — 40 Plätze, kostenlos, Nordeinfahrt')">
+                <rect x="-62" y="-15" width="124" height="29" rx="14" fill="#fff" stroke="#e2e2e2" stroke-width=".5" style="filter:drop-shadow(0 2px 6px rgba(0,0,0,.13))"/>
+                <circle cx="-43" cy="0" r="10.5" fill="#475569"/><text x="-43" y="4" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="Inter">P</text>
+                <text x="8" y="4" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155" font-family="Inter">Besucherparkplatz</text>
+              </g>
+              <g class="mgrp" transform="translate(225,150)" onclick="toast('Rampe UG Nord — Anlieferung & Tiefgarage')">
+                <rect x="-52" y="-13" width="104" height="26" rx="13" fill="#fff" stroke="#eee" stroke-width=".5" style="filter:drop-shadow(0 2px 5px rgba(0,0,0,.12))"/>
+                <circle cx="-34" cy="0" r="8.5" fill="var(--dng)"/><text x="-34" y="3.5" text-anchor="middle" font-size="10" fill="#fff" font-family="Inter">↓</text>
+                <text x="7" y="3.5" text-anchor="middle" font-size="9.5" font-weight="500" fill="#334155" font-family="Inter">Rampe UG Nord</text>
+              </g>
+              <g class="mgrp" transform="translate(450,330)" onclick="toast('Notfall-Sammelplatz — bei Alarm hier einfinden')">
+                <rect x="-15" y="-15" width="30" height="30" rx="7" fill="var(--ok)" style="filter:drop-shadow(0 2px 5px rgba(0,0,0,.18))"/>
+                <text x="0" y="5" text-anchor="middle" font-size="15" fill="#fff" font-family="Inter">⛬</text>
+              </g>
+              <g class="mgrp" id="tenantM" transform="translate(330,210)">
+                <rect id="tenantPill" x="-60" y="-15" width="120" height="30" rx="15" fill="#fff" stroke="var(--pri)" stroke-width="1.8" style="filter:drop-shadow(0 3px 8px rgba(37,99,235,.25))"/>
+                <circle id="tenantCircle" cx="-44" cy="0" r="9" fill="var(--pri)"/>
+                <text id="tenantMTxt" x="-44" y="3.5" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="Inter">RS</text>
+                <text id="tenantTxt" x="-30" y="3.5" text-anchor="start" font-size="10" font-weight="600" fill="var(--pri-d)" font-family="Inter">R. Steiner AG</text>
+              </g>
+            </g>
+
+            <!-- EDIT LAYER (built by JS) -->
+            <g id="editLayer" style="display:none"></g>
+
+            <g transform="translate(715,42)">
+              <circle r="20" fill="rgba(255,255,255,.85)" stroke="rgba(0,0,0,.08)" stroke-width=".5"/>
+              <text x="0" y="-5" text-anchor="middle" font-size="10" font-weight="700" fill="var(--dng)" font-family="Inter">N</text>
+              <polygon points="0,-15 3.5,-3 0,-6 -3.5,-3" fill="var(--dng)"/><polygon points="0,15 3.5,3 0,6 -3.5,3" fill="#bbb"/>
+            </g>
+          </g>
+        </svg>
+        <div class="zoom-ctrl">
+          <button onclick="zoom(1.25)" aria-label="Plus"><i class="ti ti-plus"></i></button>
+          <button onclick="zoom(0.8)" aria-label="Minus"><i class="ti ti-minus"></i></button>
+          <button onclick="zoomReset()" aria-label="Reset"><i class="ti ti-focus-2"></i></button>
+        </div>
+        <div class="legend" id="legend">
+          <div class="leg-title">Legende</div>
+          <div class="leg-item"><div class="leg-dash"></div>Besucherweg</div>
+          <div class="leg-item"><div class="leg-dot" style="background:var(--pri)"></div>Aktiver Mieter</div>
+          <div class="leg-item"><div class="leg-dot" style="background:var(--dng)"></div>Eingang / Rampe</div>
+          <div class="leg-item"><div class="leg-sq" style="background:#717d7d"></div>Gebäude</div>
+        </div>
+        <div class="edit-banner" id="editBanner"><i class="ti ti-click"></i><span id="editBannerTxt">Editor aktiv</span></div>
+        <div class="floor-flag" id="floorFlag">
+          <span><b id="ffName">Mieter</b> befindet sich im <b id="ffFloor">EG</b></span>
+          <button onclick="goToTenantFloor()">Zur Etage</button>
+        </div>
+      </div>
+
+      <div class="view view-floor" id="view-ug"></div>
+      <div class="view view-floor" id="view-eg"></div>
+      <div class="view view-floor" id="view-og"></div>
+
+      <div class="doc-view" id="view-pdf">
+        <div class="doc-card">
+          <div class="doc-thumb"><div class="doc-badge">PDF</div><i class="ti ti-map-2"></i></div>
+          <div class="doc-body"><h3>Umgebungsplan Sektor 10</h3><p>Lageplan mit Anfahrt, ÖV und Umgebung, Massstab 1:2000.</p>
+            <div class="doc-meta"><div>Format<b>A2 · PDF</b></div><div>Grösse<b>2,4 MB</b></div><div>Stand<b>06 / 2026</b></div></div>
+            <div class="doc-actions"><button class="btn btn-pri" onclick="toast('Download startet')"><i class="ti ti-download"></i>Herunterladen</button><button class="btn" onclick="toast('Vollbild-Vorschau')"><i class="ti ti-maximize"></i>Vorschau</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="doc-view" id="view-fac">
+        <div class="doc-card">
+          <div class="doc-thumb">
+            <svg viewBox="0 0 240 120" width="200" height="100">
+              <rect x="20" y="30" width="90" height="70" fill="#8e9a9a" stroke="#6b7878" stroke-width="1.5"/>
+              <polygon points="20,30 65,12 110,30" fill="#a0acac" stroke="#6b7878" stroke-width="1.5"/>
+              <g fill="#bfe0ff" opacity=".7"><rect x="30" y="44" width="14" height="12"/><rect x="52" y="44" width="14" height="12"/><rect x="74" y="44" width="14" height="12"/><rect x="30" y="64" width="14" height="12"/><rect x="52" y="64" width="14" height="12"/></g>
+              <rect x="130" y="40" width="90" height="60" fill="#9aa6a6" stroke="#6b7878" stroke-width="1.5"/>
+              <g fill="#bfe0ff" opacity=".7"><rect x="140" y="52" width="14" height="12"/><rect x="162" y="52" width="14" height="12"/><rect x="184" y="52" width="14" height="12"/></g>
+            </svg>
+          </div>
+          <div class="doc-body"><h3>Fassadenansichten</h3><p>Aufrisse aller vier Gebäudeseiten: S-O, N-W, S-W, N-O.</p>
+            <div class="doc-meta"><div>Ansichten<b>4 Seiten</b></div><div>Format<b>PNG / DWG</b></div><div>Stand<b>06 / 2026</b></div></div>
+            <div class="doc-actions"><button class="btn btn-pri" onclick="toast('Galerie öffnen')"><i class="ti ti-photo"></i>Galerie</button><button class="btn" onclick="toast('Download startet')"><i class="ti ti-download"></i>Alle laden</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DETAIL -->
+  <aside class="detail" id="detail">
+    <div class="dt-scroll" id="detailScroll"></div>
+    <div class="dt-foot">
+      <button class="btn" onclick="toggleQR()"><i class="ti ti-qrcode"></i>Route teilen</button>
+      <button class="btn btn-pri" onclick="window.print()"><i class="ti ti-printer"></i>Drucken</button>
+    </div>
+  </aside>
+</div>
+
+<footer class="statusbar">
+  <div class="sbi"><i class="ti ti-map-pin"></i><a href="https://maps.app.goo.gl/L7WBLifTbHsPRecU6" target="_blank" rel="noopener">Industriestrasse 1283, 5728 Gontenschwil</a></div>
+  <div class="sb-sep"></div>
+  <div class="sbi emerg"><i class="ti ti-urgent"></i>Sammelplatz: Parkplatz Nord</div>
+  <div class="sb-sep"></div>
+  <div class="sbi"><i class="ti ti-accessible"></i>Barrierefrei: Aufzug A + B</div>
+  <div class="sp" style="flex:1"></div>
+  <div class="sbi live-pill"><span class="ld"></span>Live · Daten aktuell</div>
+</footer>
+
+<div id="toast" style="position:fixed;bottom:54px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--t1);color:#fff;padding:11px 18px;border-radius:10px;font-size:12.5px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:100;box-shadow:0 8px 30px rgba(0,0,0,.25);max-width:90%;text-align:center"></div>
+
+<script>
+/* ========== VISITOR DATA ========== */
+const CATS=[{key:'all',label:'Alle'},{key:'prod',label:'Produktion'},{key:'log',label:'Logistik'},{key:'office',label:'Büro & IT'},{key:'retail',label:'Handel'},{key:'tech',label:'Haustechnik'}];
+const CATMETA={prod:{icon:'ti-tools',label:'Produktion'},log:{icon:'ti-truck',label:'Logistik & Spedition'},office:{icon:'ti-device-laptop',label:'Büro & IT'},retail:{icon:'ti-shopping-cart',label:'Handel'},tech:{icon:'ti-bolt',label:'Haustechnik'}};
+const T=[
+  {id:0,slug:'kanalfrei',name:'Kanalfrei AG',abbr:'KA',color:'#0891b2',cat:'tech',desc:'Sanitär & Rohrtechnik',floor:'eg',floorLabel:'EG · Halle Nord',unit:'N-04',entry:'Eingang Nord',dist:'95 m',time:'ca. 3 Min.',access:true,employees:24,phone:'+41 62 773 04 10',email:'empfang@kanalfrei.ch',web:'kanalfrei.ch',hours:{wd:[7,17],sat:[8,12]},note:'Bitte am Empfang Halle Nord anmelden. Schutzschuhe in der Werkstatt erforderlich.',mx:255,my:158,route:'M 560,408 L 510,384 L 448,356 L 378,330 L 308,308 L 256,286 L 210,262 L 184,240 L 168,218 L 168,196 L 178,176 L 198,164 L 230,160 L 252,162',steps:[{t:'Besucherparkplatz Nord',m:'Start · 40 Plätze',ic:'ti-parking',cls:'start'},{t:'Dem Weg Richtung Gebäude folgen',m:'ca. 70 m',ic:'ti-arrow-up'},{t:'Eingang Nord betreten',m:'barrierefrei',ic:'ti-door-enter'},{t:'In Halle Nord links halten',m:'Abschnitt N',ic:'ti-arrow-left'},{t:'Kanalfrei AG · Tür N-04',m:'Empfang rechts',ic:'ti-flag',cls:'end'}]},
+  {id:1,slug:'steiner',name:'R. Steiner AG',abbr:'RS',color:'#b45309',cat:'prod',desc:'Schreinerei & Innenausbau',floor:'eg',floorLabel:'EG · Abschnitt B',unit:'B-12',entry:'Eingang West',dist:'78 m',time:'ca. 2 Min.',access:true,employees:38,phone:'+41 62 773 18 80',email:'kontakt@steiner-ag.ch',web:'steiner-ag.ch',hours:{wd:[7,17],sat:[8,12]},note:'Anmeldung am Hauptempfang West. Werkstattbesuche nur mit Begleitung.',mx:340,my:212,route:'M 560,408 L 510,384 L 448,356 L 378,330 L 312,308 L 262,288 L 218,266 L 188,244 L 172,222 L 172,200 L 184,182 L 210,172 L 250,180 L 290,202 L 322,214',steps:[{t:'Besucherparkplatz Nord',m:'Start · 40 Plätze',ic:'ti-parking',cls:'start'},{t:'Weg Richtung Hauptgebäude',m:'ca. 60 m',ic:'ti-arrow-up'},{t:'Eingang West betreten',m:'Haupteingang',ic:'ti-door-enter'},{t:'Im EG geradeaus in Abschnitt B',m:'Gang B folgen',ic:'ti-arrow-up'},{t:'R. Steiner AG · Tür B-12',m:'Empfang links',ic:'ti-flag',cls:'end'}]},
+  {id:2,slug:'vogt',name:'Vogt Präzision AG',abbr:'VP',color:'#475569',cat:'prod',desc:'CNC-Bearbeitung & Maschinenbau',floor:'eg',floorLabel:'EG · Halle Süd',unit:'S-07',entry:'Eingang Süd',dist:'88 m',time:'ca. 2 Min.',access:true,employees:52,phone:'+41 62 773 55 30',email:'info@vogt-praezision.ch',web:'vogt-praezision.ch',hours:{wd:[6,18],sat:null},note:'Gehörschutz in der Produktion bereitgestellt. Anmeldung Halle Süd.',mx:408,my:258,route:'M 560,408 L 512,384 L 456,358 L 410,332 L 380,308 L 366,286 L 370,266 L 388,256',steps:[{t:'Besucherparkplatz Nord',m:'Start · 40 Plätze',ic:'ti-parking',cls:'start'},{t:'Entlang Südfassade gehen',m:'ca. 75 m',ic:'ti-arrow-right'},{t:'Eingang Süd betreten',m:'Tor 3',ic:'ti-door-enter'},{t:'Vogt Präzision AG · Tür S-07',m:'Halle Süd',ic:'ti-flag',cls:'end'}]},
+  {id:3,slug:'luethi',name:'Paul Lüthi AG',abbr:'PL',color:'#16a34a',cat:'log',desc:'Spedition & Lagerlogistik',floor:'og',floorLabel:'1. OG · Disposition Ost',unit:'O-21',entry:'Eingang Ost',dist:'105 m',time:'ca. 3 Min.',access:true,employees:46,phone:'+41 62 773 70 00',email:'dispo@luethi-transport.ch',web:'luethi-transport.ch',hours:{wd:[7,18],sat:[8,12]},note:'Disposition im 1. OG via Aufzug B. LKW-Anlieferung über Rampe UG Nord.',mx:470,my:196,route:'M 560,408 L 522,378 L 506,344 L 498,308 L 492,272 L 486,240 L 478,216 L 466,202 L 456,196',steps:[{t:'Besucherparkplatz Nord',m:'Start · 40 Plätze',ic:'ti-parking',cls:'start'},{t:'Richtung Ostseite gehen',m:'ca. 80 m',ic:'ti-arrow-right'},{t:'Eingang Ost betreten',m:'Wareneingang',ic:'ti-door-enter'},{t:'Aufzug B ins 1. OG',m:'barrierefrei',ic:'ti-elevator'},{t:'Paul Lüthi AG · Tür O-21',m:'Disposition',ic:'ti-flag',cls:'end'}]},
+  {id:4,slug:'lehner',name:'Lehner Versand AG',abbr:'LV',color:'#7c3aed',cat:'log',desc:'E-Commerce & Fulfillment',floor:'og',floorLabel:'1. OG · Ost',unit:'O-14',entry:'Eingang Ost',dist:'108 m',time:'ca. 3 Min.',access:true,employees:67,phone:'+41 62 773 90 90',email:'service@lehner-versand.ch',web:'lehner-versand.ch',hours:{wd:[8,17],sat:null},note:'Empfang im 1. OG. Paketannahme separat im EG, Tor 4.',mx:482,my:170,route:'M 560,408 L 524,376 L 510,340 L 504,304 L 500,266 L 496,232 L 490,202 L 482,182 L 474,172',steps:[{t:'Besucherparkplatz Nord',m:'Start · 40 Plätze',ic:'ti-parking',cls:'start'},{t:'Richtung Ostseite gehen',m:'ca. 82 m',ic:'ti-arrow-right'},{t:'Eingang Ost betreten',m:'Haupttür',ic:'ti-door-enter'},{t:'Aufzug B ins 1. OG',m:'barrierefrei',ic:'ti-elevator'},{t:'Lehner Versand AG · Tür O-14',m:'Empfang Ost',ic:'ti-flag',cls:'end'}]},
+  {id:5,slug:'meridian',name:'Meridian Software GmbH',abbr:'MS',color:'#2563eb',cat:'office',desc:'Softwareentwicklung & IT',floor:'og',floorLabel:'1. OG · Süd',unit:'S-30',entry:'Eingang West',dist:'92 m',time:'ca. 3 Min.',access:true,employees:31,phone:'+41 62 773 44 12',email:'hello@meridian.dev',web:'meridian.dev',hours:{wd:[8,18],sat:null},note:'Besucher bitte vorab anmelden. WLAN-Gastzugang am Empfang.',mx:392,my:150,route:'M 560,408 L 510,384 L 448,356 L 378,330 L 312,308 L 262,288 L 222,264 L 196,240 L 184,216 L 192,190 L 214,168 L 260,148 L 320,142 L 372,148',steps:[{t:'Besucherparkplatz Nord',m:'Start · 40 Plätze',ic:'ti-parking',cls:'start'},{t:'Weg Richtung Hauptgebäude',m:'ca. 60 m',ic:'ti-arrow-up'},{t:'Eingang West betreten',m:'Haupteingang',ic:'ti-door-enter'},{t:'Aufzug A ins 1. OG',m:'Lobby links',ic:'ti-elevator'},{t:'Meridian Software · Tür S-30',m:'Südflügel',ic:'ti-flag',cls:'end'}]},
+  {id:6,slug:'nordwand',name:'Nordwand Sport AG',abbr:'NW',color:'#dc2626',cat:'retail',desc:'Sportartikel-Grosshandel',floor:'og',floorLabel:'1. OG · West',unit:'W-08',entry:'Eingang West',dist:'84 m',time:'ca. 2 Min.',access:true,employees:29,phone:'+41 62 773 22 60',email:'verkauf@nordwand-sport.ch',web:'nordwand-sport.ch',hours:{wd:[9,18],sat:[9,16]},note:'Showroom im 1. OG West. Musterbestellungen am Empfang.',mx:300,my:170,route:'M 560,408 L 510,384 L 448,356 L 378,330 L 312,308 L 262,288 L 218,266 L 192,242 L 182,218 L 190,194 L 212,176 L 250,168 L 282,172',steps:[{t:'Besucherparkplatz Nord',m:'Start · 40 Plätze',ic:'ti-parking',cls:'start'},{t:'Weg Richtung Hauptgebäude',m:'ca. 60 m',ic:'ti-arrow-up'},{t:'Eingang West betreten',m:'Haupteingang',ic:'ti-door-enter'},{t:'Aufzug A ins 1. OG',m:'dann links',ic:'ti-elevator'},{t:'Nordwand Sport · Tür W-08',m:'Showroom West',ic:'ti-flag',cls:'end'}]},
+  {id:7,slug:'brunner',name:'Brunner Elektro AG',abbr:'BE',color:'#d97706',cat:'tech',desc:'Elektroinstallation & Planung',floor:'og',floorLabel:'1. OG · Nord',unit:'N-17',entry:'Eingang Nord',dist:'98 m',time:'ca. 3 Min.',access:true,employees:41,phone:'+41 62 773 33 33',email:'planung@brunner-elektro.ch',web:'brunner-elektro.ch',hours:{wd:[7,17],sat:null},note:'Büro im 1. OG Nord, Aufzug A. Lager und Werkstatt im EG.',mx:352,my:142,route:'M 560,408 L 510,384 L 448,356 L 378,330 L 308,308 L 256,286 L 210,262 L 186,238 L 178,212 L 188,186 L 214,166 L 256,152 L 312,144 L 336,144',steps:[{t:'Besucherparkplatz Nord',m:'Start · 40 Plätze',ic:'ti-parking',cls:'start'},{t:'Dem Weg zum Gebäude folgen',m:'ca. 70 m',ic:'ti-arrow-up'},{t:'Eingang Nord betreten',m:'barrierefrei',ic:'ti-door-enter'},{t:'Aufzug A ins 1. OG',m:'rechts halten',ic:'ti-elevator'},{t:'Brunner Elektro · Tür N-17',m:'Planungsbüro',ic:'ti-flag',cls:'end'}]},
+];
+const DAYS=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+let sel=1,activeCat='all',qrOpen=false,appMode='visitor';
+
+function fmt(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');}
+function statusOf(t){const n=new Date(),d=n.getDay(),h=n.getHours()+n.getMinutes()/60;let span=d===0?null:(d===6?t.hours.sat:t.hours.wd);if(!span)return{open:false,label:'Heute geschlossen'};if(h>=span[0]&&h<span[1])return{open:true,label:'Geöffnet · bis '+fmt(span[1])};if(h<span[0])return{open:false,label:'Öffnet um '+fmt(span[0])};return{open:false,label:'Geschlossen · öffnet morgen'};}
+
+function renderFilters(){document.getElementById('filterRow').innerHTML=CATS.map(c=>`<button class="fchip${c.key===activeCat?' on':''}" onclick="setCat('${c.key}')">${c.label}</button>`).join('');}
+function setCat(k){activeCat=k;renderFilters();render();}
+function render(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const items=T.filter(t=>(activeCat==='all'||t.cat===activeCat)&&(!q||(t.name+' '+t.desc+' '+t.floorLabel+' '+CATMETA[t.cat].label).toLowerCase().includes(q)));
+  document.getElementById('resCount').textContent=items.length+' Mieter';
+  document.getElementById('openCount').innerHTML=`<span style="color:var(--ok)">●</span> ${T.filter(t=>statusOf(t).open).length} offen`;
+  const list=document.getElementById('tenantList');
+  if(!items.length){list.innerHTML=`<div class="no-res"><i class="ti ti-search-off"></i>Keine Treffer</div>`;return;}
+  list.innerHTML=items.map(t=>{const s=statusOf(t);return `<div class="tn-item${t.id===sel?' on':''}" role="listitem" onclick="pick(${t.id})"><div class="tn-badge" style="background:${t.color}">${t.abbr}</div><div class="tn-info"><div class="tn-name">${t.name}</div><div class="tn-sub"><span class="dot" style="background:${s.open?'var(--ok)':'var(--t3)'}"></span>${t.desc}</div></div><div class="tn-floor">${t.floorLabel.split(' · ')[0]}</div></div>`;}).join('');
+}
+function renderDetail(){
+  const t=T[sel],s=statusOf(t),cm=CATMETA[t.cat],today=new Date().getDay();
+  const hr=[{d:'Mo – Fr',span:t.hours.wd,a:today>=1&&today<=5},{d:'Samstag',span:t.hours.sat,a:today===6},{d:'Sonntag',span:null,a:today===0}].map(r=>`<div class="hours-row${r.a?' today':''}"><span class="hday">${r.d}</span><span class="${r.span?'htime':'closed-t'}">${r.span?fmt(r.span[0])+' – '+fmt(r.span[1]):'geschlossen'}</span></div>`).join('');
+  const steps=t.steps.map(st=>`<div class="step ${st.cls||''}"><div class="step-ic"><i class="ti ${st.ic}"></i></div><div class="step-tx"><div class="st-main">${st.t}</div><div class="st-meta">${st.m}</div></div></div>`).join('');
+  document.getElementById('detailScroll').innerHTML=`
+    <div class="dt-head"><div class="dt-badge-row"><div class="dt-badge" style="background:${t.color}">${t.abbr}</div><div class="dt-title"><h2>${t.name}</h2><div class="dt-cat"><i class="ti ${cm.icon}"></i>${cm.label}</div></div></div><div class="dt-status ${s.open?'open':'closed'}"><span class="pulse"></span>${s.label}</div></div>
+    <div class="dt-stats"><div class="dstat"><div class="l"><i class="ti ti-stairs"></i>Etage</div><div class="v">${t.floorLabel.split(' · ')[0]} <small>· ${t.unit}</small></div></div><div class="dstat"><div class="l"><i class="ti ti-door-enter"></i>Eingang</div><div class="v">${t.entry}</div></div><div class="dstat"><div class="l"><i class="ti ti-walk"></i>Gehzeit</div><div class="v">${t.time}</div></div><div class="dstat"><div class="l"><i class="ti ti-ruler-measure"></i>Distanz</div><div class="v">${t.dist}</div></div></div>
+    <div class="dt-sec"><div class="dt-sec-title">Wegbeschreibung <span class="badge">${t.steps.length} Schritte</span></div><div class="steps">${steps}</div>${t.access?'<div style="margin-top:6px;font-size:11.5px;color:var(--ok);display:flex;align-items:center;gap:6px"><i class="ti ti-accessible"></i>Komplett barrierefrei erreichbar</div>':''}</div>
+    <div class="dt-sec"><div class="dt-sec-title">Kontakt</div>
+      <a class="crow" href="tel:${t.phone.replace(/\s/g,'')}"><div class="crow-ic"><i class="ti ti-phone"></i></div><div class="crow-tx"><div class="cl">Telefon</div><div class="cv">${t.phone}</div></div><i class="ti ti-chevron-right crow-arr"></i></a>
+      <a class="crow" href="mailto:${t.email}"><div class="crow-ic"><i class="ti ti-mail"></i></div><div class="crow-tx"><div class="cl">E-Mail</div><div class="cv">${t.email}</div></div><i class="ti ti-chevron-right crow-arr"></i></a>
+      <a class="crow" href="https://${t.web}" target="_blank" rel="noopener"><div class="crow-ic"><i class="ti ti-world"></i></div><div class="crow-tx"><div class="cl">Website</div><div class="cv">${t.web}</div></div><i class="ti ti-external-link crow-arr"></i></a>
+      <div class="crow" style="cursor:default"><div class="crow-ic"><i class="ti ti-users"></i></div><div class="crow-tx"><div class="cl">Mitarbeitende</div><div class="cv">${t.employees} Personen</div></div></div>
+    </div>
+    <div class="dt-sec"><div class="dt-sec-title">Öffnungszeiten</div>${hr}</div>
+    <div class="dt-sec"><div class="dt-sec-title">Besucher-Hinweis</div><div class="vnote"><i class="ti ti-info-circle"></i><p>${t.note}</p></div>
+      <div class="qr-area${qrOpen?' show':''}" id="qrArea"><div class="qr-box" id="qrBox"></div><div class="qr-cap">Scannen Sie den Code, um diese<br>Wegbeschreibung aufs Handy zu laden</div></div></div>`;
+  if(qrOpen)buildQR();
+}
+function buildQR(){const box=document.getElementById('qrBox');if(!box)return;box.innerHTML='';try{new QRCode(box,{text:location.origin+location.pathname+'#'+T[sel].slug,width:132,height:132,colorDark:'#0f172a',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});}catch(e){box.innerHTML='<div style="padding:40px;color:var(--t3)">—</div>';}}
+function toggleQR(){qrOpen=!qrOpen;renderDetail();if(qrOpen){const a=document.getElementById('qrArea');a&&a.scrollIntoView({behavior:'smooth',block:'nearest'});}}
+function updateMap(){
+  const t=T[sel],tw=Math.max(98,t.name.length*6.0+54),hw=tw/2;
+  document.getElementById('tenantM').setAttribute('transform',`translate(${t.mx},${t.my})`);
+  const pill=document.getElementById('tenantPill');pill.setAttribute('x',-hw);pill.setAttribute('width',tw);
+  document.getElementById('tenantCircle').setAttribute('cx',-hw+16);
+  const mt=document.getElementById('tenantMTxt');mt.setAttribute('x',-hw+16);mt.textContent=t.abbr;
+  const txt=document.getElementById('tenantTxt');txt.textContent=t.name;txt.setAttribute('x',-hw+31);
+  const rp=document.getElementById('routeEl');rp.setAttribute('d',t.route);rp.classList.remove('route-path');void rp.getBoundingClientRect();rp.classList.add('route-path');
+  const m=t.route.match(/M\s*([\d.]+),([\d.]+)/);if(m){document.getElementById('startDot').setAttribute('cx',m[1]);document.getElementById('startDot').setAttribute('cy',m[2]);}
+}
+
+/* ========== FLOOR PLANS ========== */
+const FLOORS={ug:{title:'Untergeschoss',rooms:[{x:70,y:60,w:400,h:120,label:'Tiefgarage',sub:'48 Stellplätze',type:'park'},{x:70,y:200,w:120,h:150,label:'Lager A',sub:'Logistik'},{x:200,y:200,w:120,h:150,label:'Lager B',sub:'Archiv'},{x:330,y:200,w:140,h:90,label:'Technikzentrale',sub:'Haustechnik',type:'tech'},{x:330,y:300,w:140,h:50,label:'Rampe UG Nord',sub:'Anlieferung',type:'ramp'},{x:490,y:60,w:200,h:290,label:'Lager C',sub:'Hochregal'}]},eg:{title:'Erdgeschoss',rooms:[{x:70,y:60,w:180,h:130,label:'Kanalfrei AG',sub:'N-04',tid:0},{x:260,y:60,w:200,h:130,label:'Vogt Präzision AG',sub:'S-07',tid:2},{x:470,y:60,w:220,h:130,label:'Werkstatt Brunner',sub:'Lager EG'},{x:70,y:240,w:180,h:130,label:'R. Steiner AG',sub:'B-12',tid:1},{x:300,y:240,w:160,h:130,label:'Foyer & Empfang',sub:'Eingang West',type:'foyer'},{x:470,y:240,w:220,h:130,label:'Wareneingang',sub:'Tor 3 / Tor 4'}]},og:{title:'1. Obergeschoss',rooms:[{x:70,y:60,w:180,h:130,label:'Brunner Elektro AG',sub:'N-17',tid:7},{x:260,y:60,w:200,h:130,label:'Lehner Versand AG',sub:'O-14',tid:4},{x:470,y:60,w:220,h:130,label:'Paul Lüthi AG',sub:'O-21',tid:3},{x:70,y:240,w:230,h:130,label:'Nordwand Sport AG',sub:'W-08',tid:6},{x:310,y:240,w:150,h:130,label:'Galerie & Lounge',sub:'Aufenthalt',type:'foyer'},{x:470,y:240,w:220,h:130,label:'Meridian Software',sub:'S-30',tid:5}]}};
+function roomFill(r,a){if(a)return'#dbe7ff';if(r.type==='foyer')return'#eef6ee';if(r.type==='tech')return'#fdf3e7';if(r.type==='park')return'#eef1f5';if(r.type==='ramp')return'#fdeaea';if(r.tid!=null)return'#fff';return'#f3f5f8';}
+function buildFloor(key){
+  const f=FLOORS[key],el=document.getElementById('view-'+key);
+  let svg=`<svg class="map-svg" viewBox="0 0 760 430" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grundriss ${f.title}"><rect width="760" height="430" fill="#f6f8fb"/><rect x="60" y="50" width="640" height="330" rx="6" fill="#fff" stroke="#cbd3df" stroke-width="2"/><rect x="60" y="195" width="640" height="40" fill="#eef1f5"/><text x="380" y="220" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="Inter" letter-spacing="2">K O R R I D O R</text>`;
+  f.rooms.forEach(r=>{const a=r.tid===sel;svg+=`<g class="mgrp" ${r.tid!=null?`onclick="pick(${r.tid})"`:''}><rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="5" fill="${roomFill(r,a)}" stroke="${a?'#2563EB':'#d4dae4'}" stroke-width="${a?2.5:1}"/><text x="${r.x+12}" y="${r.y+24}" font-size="13" font-weight="600" fill="${a?'#1e3a8a':'#334155'}" font-family="Inter">${r.label}</text><text x="${r.x+12}" y="${r.y+41}" font-size="10.5" fill="${a?'#2563EB':'#94a3b8'}" font-family="Inter">${r.sub}</text>`;if(r.type==='park'){for(let i=0;i<8;i++)svg+=`<rect x="${r.x+18+i*46}" y="${r.y+58}" width="36" height="46" rx="3" fill="none" stroke="#cbd3df"/>`;}if(a)svg+=`<g transform="translate(${r.x+r.w-26},${r.y+24})"><circle r="13" fill="#2563EB"/><text y="5" text-anchor="middle" font-size="14" fill="#fff" font-family="Inter">★</text></g>`;svg+=`</g>`;});
+  svg+=`<g transform="translate(330,300)"><rect width="46" height="62" rx="4" fill="#fff" stroke="#cbd3df" stroke-width="1.2"/><line x1="0" y1="12" x2="46" y2="12" stroke="#cbd3df"/><line x1="0" y1="24" x2="46" y2="24" stroke="#cbd3df"/><line x1="0" y1="36" x2="46" y2="36" stroke="#cbd3df"/><line x1="0" y1="48" x2="46" y2="48" stroke="#cbd3df"/><text x="23" y="78" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="Inter">Treppe</text></g><g transform="translate(388,300)"><rect width="40" height="62" rx="4" fill="#eaf1ff" stroke="#2563EB" stroke-width="1.2"/><text x="20" y="38" text-anchor="middle" font-size="18" fill="#2563EB" font-family="Inter">⬍</text><text x="20" y="78" text-anchor="middle" font-size="9" fill="#2563EB" font-family="Inter">Aufzug A</text></g>`;
+  if(key==='eg')svg+=`<g transform="translate(380,392)"><polygon points="0,12 -8,-2 -3,-2 -3,-12 3,-12 3,-2 8,-2" fill="#16a34a"/><text x="20" y="6" font-size="10" fill="#16a34a" font-family="Inter" font-weight="600">Eingang West</text></g>`;
+  svg+=`<text x="74" y="40" font-size="11" font-weight="700" fill="#64748b" font-family="Inter" letter-spacing="1">${f.title.toUpperCase()}</text></svg>`;
+  el.innerHTML=svg;
+}
+
+/* ========== VIEWS ========== */
+let curView='map';
+function setView(el,key){
+  curView=key;
+  document.querySelectorAll('.mt').forEach(m=>m.classList.toggle('on',m.dataset.view===key));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('show'));
+  document.querySelectorAll('.doc-view').forEach(v=>v.classList.remove('show'));
+  if(key==='pdf'||key==='fac'){document.getElementById('view-'+key).classList.add('show');hideFlag();return;}
+  document.getElementById('view-'+key).classList.add('show');
+  if(['ug','eg','og'].includes(key)){buildFloor(key);if(appMode==='visitor')checkFloorFlag();}else hideFlag();
+}
+function checkFloorFlag(){const t=T[sel],flag=document.getElementById('floorFlag');if(appMode==='visitor'&&['ug','eg','og'].includes(curView)&&t.floor!==curView){document.getElementById('ffName').textContent=t.name;document.getElementById('ffFloor').textContent=({ug:'UG',eg:'EG',og:'1. OG'})[t.floor];flag.classList.add('show');}else hideFlag();}
+function hideFlag(){document.getElementById('floorFlag').classList.remove('show');}
+function goToTenantFloor(){const f=T[sel].floor;setView(document.querySelector(`.mt[data-view="${f}"]`),f);}
+
+let zoomLvl=1;
+function applyZoom(){document.getElementById('zoomG').setAttribute('transform',`translate(380,235) scale(${zoomLvl}) translate(-380,-235)`);}
+function zoom(f){zoomLvl=Math.min(2.5,Math.max(0.6,zoomLvl*f));applyZoom();}
+function zoomReset(){zoomLvl=1;applyZoom();}
+
+function pick(id){sel=id;qrOpen=false;render();renderDetail();updateMap();if(['ug','eg','og'].includes(curView)){buildFloor(curView);checkFloorFlag();}if(window.innerWidth<=1024)document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'start'});}
+function setLang(el,l){document.querySelectorAll('.lang button').forEach(b=>b.classList.remove('on'));el.classList.add('on');if(l!=='DE')toast(l+' — Übersetzung in dieser Demo nicht aktiv');}
+
+/* ========== EDITOR ========== */
+const MTYPE={mieter:{c:'#2563EB',ic:'⬢'},eingang:{c:'#16a34a',ic:'▸'},parkplatz:{c:'#475569',ic:'P'},rampe:{c:'#dc2626',ic:'↓'},wareneingang:{c:'#d97706',ic:'❒'},briefkasten:{c:'#7c3aed',ic:'✉'},sammelplatz:{c:'#0891b2',ic:'⛬'},sonstiges:{c:'#64748b',ic:'•'}};
+const PALETTE=['#2563EB','#16a34a','#dc2626','#d97706','#7c3aed','#0891b2','#d6177f','#475569'];
+const LS_KEY='lotse_sektor10_v1';
+function seedData(){return{markers:[
+  {id:'m1',name:'Besucherparkplatz',type:'parkplatz',color:'#475569',x:74,y:88},
+  {id:'m2',name:'Rampe UG Nord',type:'rampe',color:'#dc2626',x:30,y:33},
+  {id:'m3',name:'Kanalfrei AG',type:'mieter',color:'#0891b2',x:50,y:35},
+  {id:'m4',name:'R. Steiner AG',type:'mieter',color:'#b45309',x:40,y:52},
+  {id:'m5',name:'Paul Lüthi AG',type:'mieter',color:'#16a34a',x:54,y:62},
+  {id:'m6',name:'Lehner Versand AG',type:'mieter',color:'#7c3aed',x:64,y:45},
+  {id:'m7',name:'Wareneingang Rampe EG',type:'wareneingang',color:'#d97706',x:71,y:55},
+  {id:'m8',name:'Briefkastenanlage',type:'briefkasten',color:'#7c3aed',x:67,y:61},
+  {id:'m9',name:'Eingang Büro EG Süd',type:'eingang',color:'#16a34a',x:60,y:67},
+  {id:'m10',name:'Notfall-Sammelplatz',type:'sammelplatz',color:'#0891b2',x:59,y:73}
+],paths:[
+  {id:'p1',name:'Besucherparkplatz → Lehner Versand AG',color:'#d6177f',target:'m6',points:[{x:74,y:88},{x:72,y:80},{x:70,y:66},{x:68,y:56}]}
+]};}
+let editData=seedData(),selMarkerId=null,activePathId=null,editTool='idle',onlyActive=false,drag=null;
+
+function loadData(){try{const r=localStorage.getItem(LS_KEY);if(r){editData=JSON.parse(r);return;}}catch(e){}editData=seedData();}
+function saveData(){try{localStorage.setItem(LS_KEY,JSON.stringify(editData));const el=document.getElementById('saveTxt');if(el){el.textContent='Gespeichert ✓';setTimeout(()=>el.textContent='Automatisch gespeichert',1200);}}catch(e){}}
+function uid(){return 'm'+Math.floor(performance.now()*1000%1e9)+editData.markers.length;}
+function pid(){return 'p'+Math.floor(performance.now()*1000%1e9)+editData.paths.length;}
+
+function svgX(p){return 760*p/100;} function svgY(p){return 470*p/100;}
+function clientToPct(e){const L=document.getElementById('editLayer');const ctm=L.getScreenCTM().inverse();const pt=document.getElementById('mapSvg').createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(ctm);return{x:Math.max(1,Math.min(99,q.x/760*100)),y:Math.max(1,Math.min(99,q.y/470*100))};}
+function mById(id){return editData.markers.find(m=>m.id===id);}
+function pById(id){return editData.paths.find(p=>p.id===id);}
+
+function drawEditLayer(){
+  const L=document.getElementById('editLayer');let s='';
+  editData.paths.forEach(p=>{
+    if(onlyActive&&p.id!==activePathId)return;
+    const pts=p.points.map(q=>({x:svgX(q.x),y:svgY(q.y)}));
+    if(p.target){const tm=mById(p.target);if(tm)pts.push({x:svgX(tm.x),y:svgY(tm.y)});}
+    const act=p.id===activePathId;
+    if(pts.length>=2)s+=`<polyline points="${pts.map(q=>q.x.toFixed(1)+','+q.y.toFixed(1)).join(' ')}" fill="none" stroke="${p.color}" stroke-width="4.5" stroke-dasharray="13,8" stroke-linecap="round" stroke-linejoin="round" opacity="${act?1:.45}"/>`;
+    if(act&&(editTool==='waypoint'||editTool==='markerWp'))p.points.forEach((pt,i)=>{s+=`<circle class="wp" data-i="${i}" cx="${svgX(pt.x)}" cy="${svgY(pt.y)}" r="7.5" fill="#fff" stroke="${p.color}" stroke-width="2.5"/>`;});
+  });
+  editData.markers.forEach(m=>{
+    const t=MTYPE[m.type]||MTYPE.sonstiges,col=m.color||t.c,x=svgX(m.x),y=svgY(m.y),seld=m.id===selMarkerId;
+    s+=`<g class="emk" data-id="${m.id}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})">${seld?`<circle r="21" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="3,3" opacity=".8"/>`:''}<circle r="11" fill="${col}" stroke="#fff" stroke-width="2.5" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))"/><text y="4" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Inter">${t.ic}</text><g transform="translate(15,0)"><rect x="0" y="-11" width="${m.name.length*6.1+14}" height="22" rx="11" fill="#fff" stroke="${col}" stroke-width="1.2" opacity=".97"/><text x="7" y="4" font-size="10.5" font-weight="600" fill="#0f172a" font-family="Inter">${m.name}</text></g></g>`;
+  });
+  L.innerHTML=s;
+}
+
+function renderEditor(){
+  document.getElementById('mkCount').textContent=editData.markers.length;
+  document.getElementById('pCount').textContent=editData.paths.length;
+  const msel=document.getElementById('mkSelect');
+  msel.innerHTML='<option value="">— wählen —</option>'+editData.markers.map(m=>`<option value="${m.id}"${m.id===selMarkerId?' selected':''}>${m.name}</option>`).join('');
+  const m=mById(selMarkerId);
+  document.getElementById('mkName').value=m?m.name:'';
+  document.getElementById('mkType').value=m?m.type:'mieter';
+  document.getElementById('mkX').value=m?(+m.x).toFixed(1):'';
+  document.getElementById('mkY').value=m?(+m.y).toFixed(1):'';
+  document.getElementById('mkSwatches').innerHTML=PALETTE.map(c=>`<div class="sw${m&&m.color===c?' on':''}" style="background:${c}" onclick="updMarker('color','${c}')"></div>`).join('')+`<input type="color" class="sw-pick" value="${m?m.color:'#2563EB'}" oninput="updMarker('color',this.value)">`;
+  const psel=document.getElementById('pSelect');
+  psel.innerHTML='<option value="">— wählen —</option>'+editData.paths.map(p=>`<option value="${p.id}"${p.id===activePathId?' selected':''}>${p.name}</option>`).join('');
+  const p=pById(activePathId);
+  document.getElementById('pName').value=p?p.name:'';
+  document.getElementById('pTarget').innerHTML='<option value="">— kein Ziel —</option>'+editData.markers.map(mm=>`<option value="${mm.id}"${p&&p.target===mm.id?' selected':''}>${mm.name}</option>`).join('');
+  document.getElementById('pSwatches').innerHTML=PALETTE.map(c=>`<div class="sw${p&&p.color===c?' on':''}" style="background:${c}" onclick="updPath('color','${c}')"></div>`).join('')+`<input type="color" class="sw-pick" value="${p?p.color:'#d6177f'}" oninput="updPath('color',this.value)">`;
+  document.getElementById('onlyActive').checked=onlyActive;
+  ['place','waypoint','markerWp'].forEach(tl=>{const b=document.getElementById(tl==='place'?'btnPlace':tl==='waypoint'?'btnWaypoint':'btnMkWp');if(b)b.classList.toggle('act',editTool===tl);});
+}
+
+function toolToggle(tl){editTool=editTool===tl?'idle':tl;updateBanner();renderEditor();}
+function updateBanner(){
+  const b=document.getElementById('editBanner');
+  if(appMode!=='edit'||curView!=='map'){b.classList.remove('show');return;}
+  const txt={place:'Auf die Karte klicken, um einen Marker zu setzen',waypoint:'Auf die Karte klicken, um Wegpunkte zu setzen — Punkte ziehbar',markerWp:'Marker anklicken, um ihn als Wegpunkt zu setzen',idle:'Editor aktiv — Marker ziehen, oder Werkzeug links wählen'}[editTool];
+  document.getElementById('editBannerTxt').textContent=txt;b.classList.toggle('act',editTool!=='idle');b.classList.add('show');
+}
+
+function selectMarker(id){selMarkerId=id||null;drawEditLayer();renderEditor();}
+function updMarker(k,v){const m=mById(selMarkerId);if(!m)return;if(k==='x'||k==='y'){v=parseFloat(v);if(isNaN(v))return;v=Math.max(0,Math.min(100,v));}m[k]=v;drawEditLayer();saveData();if(k==='color'||k==='type')renderEditor();}
+function delMarker(){if(!selMarkerId)return;editData.markers=editData.markers.filter(m=>m.id!==selMarkerId);editData.paths.forEach(p=>{if(p.target===selMarkerId)p.target='';});selMarkerId=null;drawEditLayer();renderEditor();saveData();toast('Marker gelöscht');}
+function addMarkerAt(pct){const m={id:uid(),name:'Neuer Marker',type:'mieter',color:'#2563EB',x:+pct.x.toFixed(1),y:+pct.y.toFixed(1)};editData.markers.push(m);selMarkerId=m.id;editTool='idle';drawEditLayer();renderEditor();updateBanner();saveData();document.getElementById('mkName').focus();document.getElementById('mkName').select();}
+
+function newPath(){const p={id:pid(),name:'Neuer Weg',color:PALETTE[editData.paths.length%PALETTE.length],target:'',points:[]};editData.paths.push(p);activePathId=p.id;editTool='waypoint';drawEditLayer();renderEditor();updateBanner();saveData();}
+function selectPath(id){activePathId=id||null;drawEditLayer();renderEditor();}
+function updPath(k,v){const p=pById(activePathId);if(!p)return;p[k]=v;drawEditLayer();saveData();if(k==='color')renderEditor();}
+function delPath(){if(!activePathId)return;editData.paths=editData.paths.filter(p=>p.id!==activePathId);activePathId=null;drawEditLayer();renderEditor();saveData();toast('Weg gelöscht');}
+function undoWaypoint(){const p=pById(activePathId);if(!p||!p.points.length)return;p.points.pop();drawEditLayer();saveData();}
+function onlyActiveToggle(v){onlyActive=v;drawEditLayer();}
+function addWaypoint(pct){const p=pById(activePathId);if(!p){newPath();}pById(activePathId).points.push({x:+pct.x.toFixed(1),y:+pct.y.toFixed(1)});drawEditLayer();saveData();}
+function addMarkerWaypoint(m){const p=pById(activePathId);if(!p){newPath();}pById(activePathId).points.push({x:m.x,y:m.y});drawEditLayer();saveData();toast('„'+m.name+'“ als Wegpunkt gesetzt');}
+
+/* pointer interactions */
+function initPointer(){
+  const svg=document.getElementById('mapSvg');
+  svg.addEventListener('pointerdown',e=>{
+    if(appMode!=='edit'||curView!=='map')return;
+    const wp=e.target.closest('.wp');
+    const emk=e.target.closest('.emk');
+    if(wp){const i=+wp.dataset.i;drag={kind:'wp',i};svg.setPointerCapture(e.pointerId);e.preventDefault();return;}
+    if(emk){const id=emk.dataset.id;const m=mById(id);
+      if(editTool==='markerWp'){addMarkerWaypoint(m);return;}
+      selMarkerId=id;renderEditor();drawEditLayer();drag={kind:'marker',id};svg.setPointerCapture(e.pointerId);e.preventDefault();return;}
+    // background
+    const pct=clientToPct(e);
+    if(editTool==='place'){addMarkerAt(pct);}
+    else if(editTool==='waypoint'){addWaypoint(pct);}
+  });
+  svg.addEventListener('pointermove',e=>{
+    if(!drag)return;const pct=clientToPct(e);
+    if(drag.kind==='marker'){const m=mById(drag.id);if(m){m.x=+pct.x.toFixed(1);m.y=+pct.y.toFixed(1);drawEditLayer();document.getElementById('mkX').value=m.x.toFixed(1);document.getElementById('mkY').value=m.y.toFixed(1);}}
+    else if(drag.kind==='wp'){const p=pById(activePathId);if(p&&p.points[drag.i]){p.points[drag.i]={x:+pct.x.toFixed(1),y:+pct.y.toFixed(1)};drawEditLayer();}}
+  });
+  function endDrag(){if(drag){drag=null;saveData();}}
+  svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);
+  document.addEventListener('keydown',e=>{if(appMode==='edit'&&(e.key==='Delete'||e.key==='Backspace')&&selMarkerId&&document.activeElement.tagName!=='INPUT'){delMarker();}});
+}
+
+/* export / import */
+function exportJSON(){const blob=new Blob([JSON.stringify(editData,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lotse-sektor10.json';a.click();URL.revokeObjectURL(a.href);toast('JSON exportiert');}
+function importJSON(file){if(!file)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.markers||!d.paths)throw 0;editData=d;selMarkerId=null;activePathId=null;drawEditLayer();renderEditor();saveData();toast('JSON importiert ✓');}catch(e){toast('Ungültige JSON-Datei');}};r.readAsText(file);}
+function resetData(){if(!confirm('Alle Editor-Änderungen verwerfen und auf Standard zurücksetzen?'))return;editData=seedData();selMarkerId=null;activePathId=null;editTool='idle';onlyActive=false;localStorage.removeItem(LS_KEY);drawEditLayer();renderEditor();updateBanner();toast('Zurückgesetzt');}
+
+/* ========== MODE SWITCH ========== */
+function setMode(m){
+  appMode=m;
+  document.getElementById('tabVisitor').classList.toggle('on',m==='visitor');
+  document.getElementById('tabEdit').classList.toggle('on',m==='edit');
+  document.getElementById('visitorPane').hidden=m!=='visitor';
+  document.getElementById('editorPane').hidden=m!=='edit';
+  document.getElementById('detail').hidden=m==='edit';
+  document.getElementById('visitorLayer').style.display=m==='edit'?'none':'';
+  document.getElementById('editLayer').style.display=m==='edit'?'':'none';
+  document.getElementById('legend').style.display=m==='edit'?'none':'';
+  document.getElementById('mapSvg').classList.toggle('editing',m==='edit');
+  hideFlag();
+  if(m==='edit'){zoomReset();editTool='idle';drawEditLayer();renderEditor();updateBanner();if(curView!=='map')setView(document.querySelector('.mt[data-view="map"]'),'map');}
+  else{document.getElementById('editBanner').classList.remove('show');if(['ug','eg','og'].includes(curView))checkFloorFlag();}
+}
+
+/* ========== MISC ========== */
+function tick(){const n=new Date();document.getElementById('clockTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');document.getElementById('clockDate').textContent=DAYS[n.getDay()].slice(0,2)+', '+String(n.getDate()).padStart(2,'0')+'.'+String(n.getMonth()+1).padStart(2,'0')+'.';}
+let toastT;function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';clearTimeout(toastT);toastT=setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(20px)';},3000);}
+
+function init(){
+  const hash=location.hash.slice(1);const hit=T.findIndex(t=>t.slug===hash);if(hit>=0)sel=hit;
+  renderFilters();render();renderDetail();updateMap();['ug','eg','og'].forEach(buildFloor);
+  loadData();drawEditLayer();initPointer();
+  tick();setInterval(tick,1000);
+  setInterval(()=>{if(appMode==='visitor'){render();if(!qrOpen)renderDetail();}},60000);
+}
+init();
+</script>
+</body>
+</html>

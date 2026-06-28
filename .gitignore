@@ -1,0 +1,13 @@
+# Vercel
+.vercel
+
+# Local tooling (machine-specific paths)
+.claude
+
+# Dependencies
+node_modules
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
