@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lotse · Echtes 3D-Gebäude aus swissBUILDINGS3D</title>
+<meta name="description" content="Reales Schweizer 3D-Gebäude aus swissBUILDINGS3D 3.0 (swisstopo), live im Browser gerendert.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#07080b;--cyan:#22d3ee;--cyan-br:#67e8f9;--hi:#eef1f4;--mid:#98a2b2;--low:#5d6675;--line:rgba(255,255,255,.1);--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+html,body{height:100%}
+body{background:var(--bg);color:var(--hi);font-family:var(--font);overflow:hidden}
+#c{position:fixed;inset:0;display:block}
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(900px 600px at 70% -10%,rgba(34,211,238,.10),transparent 60%),radial-gradient(700px 500px at 10% 110%,rgba(124,92,255,.06),transparent 55%)}
+.hud{position:fixed;z-index:3;pointer-events:none}
+.top{top:0;left:0;right:0;display:flex;align-items:center;gap:14px;padding:18px 22px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.03em;pointer-events:auto}
+.brand .lg{width:28px;height:28px;border-radius:8px;background:var(--cyan);display:flex;align-items:center;justify-content:center;color:#04222a;font-size:16px;box-shadow:0 0 16px rgba(34,211,238,.5)}
+.brand span{color:var(--cyan)}
+.badge{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan-br);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.22);padding:6px 13px;border-radius:30px;pointer-events:auto}
+.card{position:fixed;left:22px;bottom:22px;z-index:3;background:rgba(13,16,22,.82);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:340px}
+.card h1{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.card .sub{font-size:12.5px;color:var(--mid);margin-bottom:14px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.spec .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--low)}
+.spec .v{font-size:14px;font-weight:600;color:var(--hi);font-variant-numeric:tabular-nums}
+.spec .v .u{font-size:11px;color:var(--mid);font-weight:400}
+.src{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--low);line-height:1.5}
+.src a{color:var(--cyan);text-decoration:none}
+.ctrls{position:fixed;right:22px;bottom:22px;z-index:3;display:flex;gap:8px}
+.ctrls button{pointer-events:auto;width:42px;height:42px;border-radius:11px;border:1px solid var(--line);background:rgba(13,16,22,.82);backdrop-filter:blur(10px);color:var(--mid);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ctrls button:hover{color:var(--cyan);border-color:rgba(34,211,238,.4)}
+.ctrls button.on{color:var(--cyan);border-color:rgba(34,211,238,.5);box-shadow:0 0 14px -4px var(--cyan)}
+.loading{position:fixed;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:var(--mid);font-size:13px;background:var(--bg)}
+.sp{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--cyan);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.back{position:fixed;top:18px;right:22px;z-index:3;pointer-events:auto}
+.back a{font-size:13px;color:var(--mid);text-decoration:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;padding:8px 14px;background:rgba(13,16,22,.7)}
+.back a:hover{color:var(--cyan)}
+@media(max-width:560px){.card{left:12px;right:12px;bottom:12px;max-width:none}.badge{display:none}}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+<canvas id="c"></canvas>
+<div class="loading" id="loading"><div class="sp"></div>Lade echtes 3D-Gebäude…</div>
+
+<div class="hud top">
+  <div class="brand"><span class="lg"><i class="ti ti-route-2"></i></span>lots<span>e</span></div>
+  <span class="badge"><i class="ti ti-building-skyscraper" style="vertical-align:-2px"></i> swissBUILDINGS3D · LIVE</span>
+</div>
+<div class="back"><a href="/"><i class="ti ti-arrow-left"></i>Zurück</a></div>
+
+<div class="card">
+  <h1 id="bName">Reales Schweizer Gebäude</h1>
+  <div class="sub" id="bSub">swissBUILDINGS3D 3.0 · Zürich</div>
+  <div class="specs">
+    <div class="spec"><div class="l">Höhe</div><div class="v" id="sH">–</div></div>
+    <div class="spec"><div class="l">Grundfläche</div><div class="v" id="sF">–</div></div>
+    <div class="spec"><div class="l">Dreiecke</div><div class="v" id="sT">–</div></div>
+    <div class="spec"><div class="l">EGID</div><div class="v" id="sE">–</div></div>
+  </div>
+  <div class="src">Quelle: <a href="https://www.swisstopo.admin.ch/de/landschaftsmodell-swissbuildings3d-3-0-beta" target="_blank" rel="noopener">swissBUILDINGS3D 3.0 © swisstopo</a> · LV95/EPSG:2056 · live im Browser gerendert (Three.js)</div>
+</div>
+
+<div class="ctrls">
+  <button id="rotBtn" class="on" title="Auto-Rotation" aria-label="Rotation"><i class="ti ti-rotate-360"></i></button>
+  <button id="edgeBtn" class="on" title="Kanten" aria-label="Kanten"><i class="ti ti-line"></i></button>
+  <button id="resetBtn" title="Ansicht zurücksetzen" aria-label="Reset"><i class="ti ti-focus-2"></i></button>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const data = await fetch('/apps/building/building.json').then(r=>r.json());
+const m = data.meta;
+document.getElementById('sH').innerHTML = m.height_m+'<span class="u"> m</span>';
+document.getElementById('sF').innerHTML = m.footprint_m[0]+'×'+m.footprint_m[1]+'<span class="u"> m</span>';
+document.getElementById('sT').textContent = m.triangles.toLocaleString('de-CH');
+document.getElementById('sE').textContent = m.egid;
+
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure=1.1;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.5, 5000);
+
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.Float32BufferAttribute(data.positions,3));
+geo.setIndex(data.indices);
+geo.computeVertexNormals();
+geo.computeBoundingBox(); geo.computeBoundingSphere();
+const bb=geo.boundingBox, size=new THREE.Vector3(); bb.getSize(size);
+const cx=(bb.min.x+bb.max.x)/2, cz=(bb.min.z+bb.max.z)/2; // x,z centered already ~0
+geo.translate(-cx,0,-cz);
+const maxDim=Math.max(size.x,size.z), h=size.y;
+
+const mat = new THREE.MeshStandardMaterial({color:0x1b2533, metalness:0.15, roughness:0.82});
+const mesh = new THREE.Mesh(geo, mat); scene.add(mesh);
+const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 24), new THREE.LineBasicMaterial({color:0x22d3ee, transparent:true, opacity:0.55}));
+mesh.add(edges);
+
+// ground
+const grid = new THREE.GridHelper(maxDim*4, 40, 0x16323a, 0x0e1a20);
+grid.material.transparent=true; grid.material.opacity=0.55; scene.add(grid);
+const disc = new THREE.Mesh(new THREE.CircleGeometry(maxDim*1.5,64), new THREE.MeshBasicMaterial({color:0x0b0f14}));
+disc.rotation.x=-Math.PI/2; disc.position.y=-0.2; scene.add(disc);
+
+scene.add(new THREE.HemisphereLight(0x9fb8d0, 0x0a0e14, 0.85));
+const key = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(maxDim, maxDim*1.4, maxDim*0.8); scene.add(key);
+const rim = new THREE.DirectionalLight(0x22d3ee, 0.5); rim.position.set(-maxDim, maxDim*0.6, -maxDim); scene.add(rim);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping=true; controls.dampingFactor=0.07; controls.autoRotate=true; controls.autoRotateSpeed=0.6;
+controls.maxPolarAngle=Math.PI*0.49; controls.target.set(0,h*0.42,0);
+function frame(){const d=maxDim*1.35; camera.position.set(d,h*0.9+d*0.45,d); controls.target.set(0,h*0.42,0); controls.update();}
+frame();
+
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+document.getElementById('rotBtn').onclick=function(){controls.autoRotate=!controls.autoRotate;this.classList.toggle('on',controls.autoRotate);};
+document.getElementById('edgeBtn').onclick=function(){edges.visible=!edges.visible;this.classList.toggle('on',edges.visible);};
+document.getElementById('resetBtn').onclick=frame;
+document.getElementById('loading').style.display='none';
+function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);}
+loop();
+window.__viewer={tris:m.triangles,verts:m.vertices};
+</script>
+</body>
+</html>
