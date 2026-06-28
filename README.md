@@ -1,8 +1,14 @@
-# Lotse — Besucherführung Sektor 10
+# Lotse — Monorepo
 
-Digitale Besucherführung & Areal-Navigation für die Liegenschaft
-**Industriestrasse 1283, 5728 Gontenschwil**.
+Digitale Besucherführung & Indoor-Wayfinding. Dieses Repo enthält die
+Produkt-Landingpage **und** die Web-App.
 
+| App | Pfad | URL |
+|-----|------|-----|
+| Landingpage (Marketing) | `apps/landing` | `/` → lotse.rapold.io |
+| Web-App (Besucherführung) | `apps/app` | `/app` |
+
+Referenz-Liegenschaft: **Industriestrasse 1283, 5728 Gontenschwil**.
 Live: https://besucherfuehrung-sektor10.vercel.app
 
 ## Features
@@ -35,12 +41,23 @@ Single-file Static App: HTML + CSS + Vanilla JS, Tabler Icons, QRCode.js.
 kein Build-Step), OrbitControls, CSS2DRenderer, UnrealBloomPass. Lazy-Load
 nur für die 3D-Ansicht, 2D-SVG als Fallback. Deployment auf Vercel (statisch).
 
+## Struktur
+
+```
+apps/
+  landing/   Premium-Produkt-Landingpage (lotse.rapold.io)
+  app/       Lotse Web-App (Besucherführung, /app)
+vercel.json  Routing: / → Landing, /app → App
+```
+
 ## Entwicklung
 
-Lokal mit beliebigem Static-Server:
+Lokal mit beliebigem Static-Server (Routing via vercel.json greift nur auf Vercel):
 
 ```bash
 npx http-server . -p 4321
+# Landing:  http://localhost:4321/apps/landing/
+# App:      http://localhost:4321/apps/app/
 ```
 
 ## Roadmap

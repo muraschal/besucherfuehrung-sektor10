@@ -262,6 +262,11 @@ body{font-family:var(--font);color:var(--t1);display:flex;flex-direction:column;
 .s3d-loading.show{display:flex}
 .s3d-spin{width:32px;height:32px;border:3px solid var(--b);border-top-color:var(--pri);border-radius:50%;animation:s3dspin .9s linear infinite}
 @keyframes s3dspin{to{transform:rotate(360deg)}}
+/* EMBED MODE (für Landing-Mockups: nur die 3D-Szene, kein Chrome) */
+html.embed,body.embed{height:100%;overflow:hidden}
+body.embed .topbar,body.embed .statusbar,body.embed .sidebar,body.embed .detail,body.embed .map-tabs,body.embed #view3dToggle,body.embed #zoomCtrl,body.embed #legend,body.embed #cam3d,body.embed #floorpick,body.embed .edit-banner,body.embed #toast{display:none!important}
+body.embed .main{flex:1;min-height:0}
+body.embed .center,body.embed .map-stage{min-height:0}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 </style>
 </head>
@@ -1000,6 +1005,8 @@ function M3D_unsupported(){return false;}
 function set3D(on){want3D=on;updateMapMode();}
 
 function init(){
+  const params=new URLSearchParams(location.search);
+  if(params.has('embed')){document.documentElement.classList.add('embed');document.body.classList.add('embed');want3D=true;sel=4;}
   const hash=location.hash.slice(1);const hit=T.findIndex(t=>t.slug===hash);if(hit>=0)sel=hit;
   renderFilters();render();renderDetail();updateMap();['ug','eg','og'].forEach(buildFloor);
   loadData();drawEditLayer();initPointer();
