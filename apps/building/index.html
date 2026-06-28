@@ -3,44 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lotse · Echtes 3D-Gebäude aus swissBUILDINGS3D</title>
-<meta name="description" content="Reales Schweizer 3D-Gebäude aus swissBUILDINGS3D 3.0 (swisstopo), live im Browser gerendert.">
+<title>Lotse · Wayfinding auf echtem Schweizer 3D-Gebäude</title>
+<meta name="description" content="Reales Schweizer 3D-Gebäude aus swissBUILDINGS3D 3.0 (swisstopo) mit Lotse-Wayfinding: Orte, Marker und leuchtende Route — live im Browser.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#07080b;--cyan:#22d3ee;--cyan-br:#67e8f9;--hi:#eef1f4;--mid:#98a2b2;--low:#5d6675;--line:rgba(255,255,255,.1);--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+:root{--bg:#07080b;--cyan:#22d3ee;--cyan-br:#67e8f9;--hi:#eef1f4;--mid:#98a2b2;--low:#5d6675;--line:rgba(255,255,255,.1);--ok:#34d399;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
 html,body{height:100%}
 body{background:var(--bg);color:var(--hi);font-family:var(--font);overflow:hidden}
 #c{position:fixed;inset:0;display:block}
 .bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(900px 600px at 70% -10%,rgba(34,211,238,.10),transparent 60%),radial-gradient(700px 500px at 10% 110%,rgba(124,92,255,.06),transparent 55%)}
-.hud{position:fixed;z-index:3;pointer-events:none}
-.top{top:0;left:0;right:0;display:flex;align-items:center;gap:14px;padding:18px 22px}
-.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.03em;pointer-events:auto}
+.top{position:fixed;top:0;left:0;right:0;z-index:3;display:flex;align-items:center;gap:14px;padding:16px 20px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.03em}
 .brand .lg{width:28px;height:28px;border-radius:8px;background:var(--cyan);display:flex;align-items:center;justify-content:center;color:#04222a;font-size:16px;box-shadow:0 0 16px rgba(34,211,238,.5)}
 .brand span{color:var(--cyan)}
-.badge{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan-br);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.22);padding:6px 13px;border-radius:30px;pointer-events:auto}
-.card{position:fixed;left:22px;bottom:22px;z-index:3;background:rgba(13,16,22,.82);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-width:340px}
-.card h1{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
-.card .sub{font-size:12.5px;color:var(--mid);margin-bottom:14px}
-.specs{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
-.spec .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--low)}
-.spec .v{font-size:14px;font-weight:600;color:var(--hi);font-variant-numeric:tabular-nums}
-.spec .v .u{font-size:11px;color:var(--mid);font-weight:400}
-.src{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--low);line-height:1.5}
-.src a{color:var(--cyan);text-decoration:none}
-.ctrls{position:fixed;right:22px;bottom:22px;z-index:3;display:flex;gap:8px}
-.ctrls button{pointer-events:auto;width:42px;height:42px;border-radius:11px;border:1px solid var(--line);background:rgba(13,16,22,.82);backdrop-filter:blur(10px);color:var(--mid);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.badge{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan-br);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.22);padding:6px 13px;border-radius:30px}
+.back a{font-size:13px;color:var(--mid);text-decoration:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;padding:7px 13px;background:rgba(13,16,22,.7)}
+.back a:hover{color:var(--cyan)}
+/* destination panel */
+.panel{position:fixed;top:64px;left:20px;z-index:3;width:248px;background:rgba(13,16,22,.85);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.panel .ph{padding:13px 15px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--low)}
+.poi{display:flex;align-items:center;gap:11px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .12s}
+.poi:hover{background:rgba(255,255,255,.04)}
+.poi.on{background:rgba(34,211,238,.08)}
+.poi .ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#04222a;flex-shrink:0}
+.poi .nm{font-size:13px;font-weight:600}
+.poi .mt{font-size:11px;color:var(--mid)}
+.poi.on .nm{color:var(--cyan-br)}
+/* building info card */
+.card{position:fixed;left:20px;bottom:20px;z-index:3;background:rgba(13,16,22,.85);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:14px;padding:15px 18px;max-width:300px}
+.card .specs{display:grid;grid-template-columns:1fr 1fr;gap:9px 16px}
+.card .l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--low)}
+.card .v{font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.card .v .u{font-size:11px;color:var(--mid);font-weight:400}
+.card .src{margin-top:12px;padding-top:11px;border-top:1px solid var(--line);font-size:10.5px;color:var(--low);line-height:1.5}
+.card .src a{color:var(--cyan);text-decoration:none}
+.ctrls{position:fixed;right:20px;bottom:20px;z-index:3;display:flex;gap:8px}
+.ctrls button{width:42px;height:42px;border-radius:11px;border:1px solid var(--line);background:rgba(13,16,22,.85);backdrop-filter:blur(10px);color:var(--mid);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .ctrls button:hover{color:var(--cyan);border-color:rgba(34,211,238,.4)}
 .ctrls button.on{color:var(--cyan);border-color:rgba(34,211,238,.5);box-shadow:0 0 14px -4px var(--cyan)}
-.loading{position:fixed;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:var(--mid);font-size:13px;background:var(--bg)}
+.loading{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:var(--mid);font-size:13px;background:var(--bg)}
 .sp{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--cyan);border-radius:50%;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.back{position:fixed;top:18px;right:22px;z-index:3;pointer-events:auto}
-.back a{font-size:13px;color:var(--mid);text-decoration:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:9px;padding:8px 14px;background:rgba(13,16,22,.7)}
-.back a:hover{color:var(--cyan)}
-@media(max-width:560px){.card{left:12px;right:12px;bottom:12px;max-width:none}.badge{display:none}}
+/* 3D labels */
+.lbl{display:flex;align-items:center;gap:7px;background:rgba(13,16,22,.82);border:1px solid var(--line);border-radius:8px;padding:4px 9px;font-size:11.5px;font-weight:600;color:var(--hi);white-space:nowrap;backdrop-filter:blur(6px);cursor:pointer;transform:translate(-50%,-140%);transition:border-color .2s,box-shadow .2s;pointer-events:auto}
+.lbl .d{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.lbl .ti{font-size:13px}
+.lbl:hover{border-color:var(--line-strong)}
+.lbl.sel{border-color:var(--cyan);box-shadow:0 0 16px rgba(34,211,238,.5);color:#fff;z-index:5}
+.lbl.dim{opacity:.5;font-weight:500}
+.lbl.ground{color:var(--mid);font-weight:500}
+@media(max-width:560px){.panel{width:auto;left:12px;right:12px;top:60px}.card{display:none}}
 </style>
 </head>
 <body>
@@ -48,87 +63,161 @@ body{background:var(--bg);color:var(--hi);font-family:var(--font);overflow:hidde
 <canvas id="c"></canvas>
 <div class="loading" id="loading"><div class="sp"></div>Lade echtes 3D-Gebäude…</div>
 
-<div class="hud top">
+<div class="top">
   <div class="brand"><span class="lg"><i class="ti ti-route-2"></i></span>lots<span>e</span></div>
-  <span class="badge"><i class="ti ti-building-skyscraper" style="vertical-align:-2px"></i> swissBUILDINGS3D · LIVE</span>
+  <span class="badge"><i class="ti ti-building-skyscraper" style="vertical-align:-2px"></i> swissBUILDINGS3D · Wayfinding-Demo</span>
+  <span class="back"><a href="/"><i class="ti ti-arrow-left"></i>Zurück</a></span>
 </div>
-<div class="back"><a href="/"><i class="ti ti-arrow-left"></i>Zurück</a></div>
+
+<div class="panel">
+  <div class="ph">Wohin möchten Sie?</div>
+  <div id="poiList"></div>
+</div>
 
 <div class="card">
-  <h1 id="bName">Reales Schweizer Gebäude</h1>
-  <div class="sub" id="bSub">swissBUILDINGS3D 3.0 · Zürich</div>
   <div class="specs">
-    <div class="spec"><div class="l">Höhe</div><div class="v" id="sH">–</div></div>
-    <div class="spec"><div class="l">Grundfläche</div><div class="v" id="sF">–</div></div>
-    <div class="spec"><div class="l">Dreiecke</div><div class="v" id="sT">–</div></div>
-    <div class="spec"><div class="l">EGID</div><div class="v" id="sE">–</div></div>
+    <div><div class="l">Gebäude</div><div class="v" id="sName">Zürich</div></div>
+    <div><div class="l">Höhe</div><div class="v" id="sH">–</div></div>
+    <div><div class="l">Grundfläche</div><div class="v" id="sF">–</div></div>
+    <div><div class="l">Dreiecke</div><div class="v" id="sT">–</div></div>
   </div>
-  <div class="src">Quelle: <a href="https://www.swisstopo.admin.ch/de/landschaftsmodell-swissbuildings3d-3-0-beta" target="_blank" rel="noopener">swissBUILDINGS3D 3.0 © swisstopo</a> · LV95/EPSG:2056 · live im Browser gerendert (Three.js)</div>
+  <div class="src">Geometrie real: <a href="https://www.swisstopo.admin.ch/de/landschaftsmodell-swissbuildings3d-3-0-beta" target="_blank" rel="noopener">swissBUILDINGS3D 3.0 © swisstopo</a> · EGID <span id="sE">–</span>. Orte sind Demo-Platzierungen.</div>
 </div>
 
 <div class="ctrls">
-  <button id="rotBtn" class="on" title="Auto-Rotation" aria-label="Rotation"><i class="ti ti-rotate-360"></i></button>
-  <button id="edgeBtn" class="on" title="Kanten" aria-label="Kanten"><i class="ti ti-line"></i></button>
-  <button id="resetBtn" title="Ansicht zurücksetzen" aria-label="Reset"><i class="ti ti-focus-2"></i></button>
+  <button id="rotBtn" class="on" title="Auto-Rotation"><i class="ti ti-rotate-360"></i></button>
+  <button id="edgeBtn" class="on" title="Kanten"><i class="ti ti-line"></i></button>
+  <button id="resetBtn" title="Gesamtansicht"><i class="ti ti-focus-2"></i></button>
 </div>
 
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
 
 const data = await fetch('/apps/building/building.json').then(r=>r.json());
 const m = data.meta;
-document.getElementById('sH').innerHTML = m.height_m+'<span class="u"> m</span>';
-document.getElementById('sF').innerHTML = m.footprint_m[0]+'×'+m.footprint_m[1]+'<span class="u"> m</span>';
-document.getElementById('sT').textContent = m.triangles.toLocaleString('de-CH');
-document.getElementById('sE').textContent = m.egid;
+document.getElementById('sH').innerHTML=m.height_m+'<span class="u"> m</span>';
+document.getElementById('sF').innerHTML=m.footprint_m[0]+'×'+m.footprint_m[1]+'<span class="u"> m</span>';
+document.getElementById('sT').textContent=m.triangles.toLocaleString('de-CH');
+document.getElementById('sE').textContent=m.egid;
 
-const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth,innerHeight);
-renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure=1.1;
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.5, 5000);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);
+renderer.toneMapping=THREE.NeutralToneMapping;renderer.toneMappingExposure=1.1;
+const labelRenderer=new CSS2DRenderer();labelRenderer.setSize(innerWidth,innerHeight);
+labelRenderer.domElement.style.cssText='position:fixed;top:0;left:0;pointer-events:none;z-index:2';
+document.body.appendChild(labelRenderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,0.5,6000);
 
-const geo = new THREE.BufferGeometry();
-geo.setAttribute('position', new THREE.Float32BufferAttribute(data.positions,3));
-geo.setIndex(data.indices);
-geo.computeVertexNormals();
-geo.computeBoundingBox(); geo.computeBoundingSphere();
-const bb=geo.boundingBox, size=new THREE.Vector3(); bb.getSize(size);
-const cx=(bb.min.x+bb.max.x)/2, cz=(bb.min.z+bb.max.z)/2; // x,z centered already ~0
+const geo=new THREE.BufferGeometry();
+geo.setAttribute('position',new THREE.Float32BufferAttribute(data.positions,3));
+geo.setIndex(data.indices);geo.computeVertexNormals();geo.computeBoundingBox();
+const bb=geo.boundingBox,size=new THREE.Vector3();bb.getSize(size);
+const cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2;
 geo.translate(-cx,0,-cz);
-const maxDim=Math.max(size.x,size.z), h=size.y;
-
-const mat = new THREE.MeshStandardMaterial({color:0x1b2533, metalness:0.15, roughness:0.82});
-const mesh = new THREE.Mesh(geo, mat); scene.add(mesh);
-const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 24), new THREE.LineBasicMaterial({color:0x22d3ee, transparent:true, opacity:0.55}));
+const SX=size.x,SZ=size.z,H=size.y,MAX=Math.max(SX,SZ);
+const mat=new THREE.MeshStandardMaterial({color:0x1b2533,metalness:0.15,roughness:0.82});
+const mesh=new THREE.Mesh(geo,mat);scene.add(mesh);
+const edges=new THREE.LineSegments(new THREE.EdgesGeometry(geo,24),new THREE.LineBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.5}));
 mesh.add(edges);
 
-// ground
-const grid = new THREE.GridHelper(maxDim*4, 40, 0x16323a, 0x0e1a20);
-grid.material.transparent=true; grid.material.opacity=0.55; scene.add(grid);
-const disc = new THREE.Mesh(new THREE.CircleGeometry(maxDim*1.5,64), new THREE.MeshBasicMaterial({color:0x0b0f14}));
-disc.rotation.x=-Math.PI/2; disc.position.y=-0.2; scene.add(disc);
+const grid=new THREE.GridHelper(MAX*4,44,0x16323a,0x0e1a20);grid.material.transparent=true;grid.material.opacity=0.5;scene.add(grid);
+const disc=new THREE.Mesh(new THREE.CircleGeometry(MAX*1.7,64),new THREE.MeshBasicMaterial({color:0x0b0f14}));disc.rotation.x=-Math.PI/2;disc.position.y=-0.15;scene.add(disc);
+scene.add(new THREE.HemisphereLight(0x9fb8d0,0x0a0e14,0.85));
+const key=new THREE.DirectionalLight(0xffffff,1.0);key.position.set(MAX,MAX*1.4,MAX*0.8);scene.add(key);
+const rim=new THREE.DirectionalLight(0x22d3ee,0.5);rim.position.set(-MAX,MAX*0.6,-MAX);scene.add(rim);
 
-scene.add(new THREE.HemisphereLight(0x9fb8d0, 0x0a0e14, 0.85));
-const key = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(maxDim, maxDim*1.4, maxDim*0.8); scene.add(key);
-const rim = new THREE.DirectionalLight(0x22d3ee, 0.5); rim.position.set(-maxDim, maxDim*0.6, -maxDim); scene.add(rim);
+// ---- ORTE auf der realen Geometrie ----
+const fz=SZ/2;            // front facade z
+const off=fz+2.5;         // marker plane just outside facade
+const TYPE={park:{c:'#94a3b8',i:'ti-parking'},eingang:{c:'#34d399',i:'ti-door-enter'},sammel:{c:'#38bdf8',i:'ti-urgent'},rampe:{c:'#f87171',i:'ti-ramp'},ziel:{c:'#22d3ee',i:'ti-map-pin'}};
+// ground POIs (around building) + facade destinations (on building)
+const POIS=[
+ {n:'Besucherparkplatz',t:'park',ground:true,pos:[0,0.5,fz+46]},
+ {n:'Haupteingang',t:'eingang',ground:true,pos:[0,0.5,fz+3]},
+ {n:'Notfall-Sammelplatz',t:'sammel',ground:true,pos:[-SX/2-22,0.5,fz+26]},
+ {n:'Anlieferung / Rampe',t:'rampe',ground:true,pos:[SX/2+14,0.5,SZ*0.1]},
+ {n:'Empfang & Info',t:'ziel',dest:true,pos:[-SX*0.18,H*0.07,off]},
+ {n:'Anmeldung',t:'ziel',dest:true,pos:[SX*0.16,H*0.07,off]},
+ {n:'Cafeteria',t:'ziel',dest:true,pos:[SX*0.30,H*0.30,off]},
+ {n:'Verwaltung',t:'ziel',dest:true,pos:[-SX*0.20,H*0.52,off]},
+ {n:'Konferenz / Aula',t:'ziel',dest:true,pos:[SX*0.05,H*0.78,off]},
+];
+const markers=[];
+POIS.forEach((p,idx)=>{
+  const tp=TYPE[p.t],col=new THREE.Color(tp.c),pos=new THREE.Vector3(...p.pos);
+  const grp=new THREE.Group();grp.position.copy(pos);
+  const dot=new THREE.Mesh(new THREE.SphereGeometry(2.2,18,18),new THREE.MeshBasicMaterial({color:col}));grp.add(dot);
+  const ring=new THREE.Mesh(new THREE.RingGeometry(3,4.2,28),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.5,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;grp.add(ring);
+  if(p.dest){ // drop line to ground to read the level
+    const lg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(0,-pos.y+0.5,0)]);
+    grp.add(new THREE.Line(lg,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.3})));
+  }
+  scene.add(grp);
+  const el=document.createElement('div');el.className='lbl'+(p.ground?' ground':'');
+  el.innerHTML=`<span class="d" style="background:${tp.c}"></span><i class="ti ${tp.i}"></i>${p.n}`;
+  el.onclick=()=>select(idx);
+  const lo=new CSS2DObject(el);lo.position.set(0,5,0);grp.add(lo);
+  markers.push({...p,grp,dot,ring,el,pos,col});
+});
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping=true; controls.dampingFactor=0.07; controls.autoRotate=true; controls.autoRotateSpeed=0.6;
-controls.maxPolarAngle=Math.PI*0.49; controls.target.set(0,h*0.42,0);
-function frame(){const d=maxDim*1.35; camera.position.set(d,h*0.9+d*0.45,d); controls.target.set(0,h*0.42,0); controls.update();}
+// route
+let routeGroup=new THREE.Group();scene.add(routeGroup);
+const pulse=new THREE.Mesh(new THREE.SphereGeometry(1.6,16,16),new THREE.MeshBasicMaterial({color:0xffffff}));pulse.visible=false;scene.add(pulse);
+let curve=null,pulseT=0;
+const park=markers.find(x=>x.t==='park').pos, ent=markers.find(x=>x.t==='eingang').pos;
+function buildRoute(target){
+  while(routeGroup.children.length)routeGroup.remove(routeGroup.children[0]);
+  const pts=[park.clone(),ent.clone(),new THREE.Vector3(target.x,2,fz+2.5),target.clone()];
+  curve=new THREE.CatmullRomCurve3(pts,false,'catmullrom',0.1);
+  const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,140,0.9,10,false),new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.9}));
+  routeGroup.add(tube);pulse.visible=true;pulseT=0;
+}
+
+// POI list + selection
+let sel=-1;
+const list=document.getElementById('poiList');
+markers.forEach((mk,idx)=>{if(!mk.dest)return;const tp=TYPE[mk.t];
+  const row=document.createElement('div');row.className='poi';row.dataset.i=idx;
+  row.innerHTML=`<span class="ic" style="background:${tp.c}"><i class="ti ${tp.i}"></i></span><div><div class="nm">${mk.n}</div><div class="mt">Route ab Besucherparkplatz</div></div>`;
+  row.onclick=()=>select(idx);list.appendChild(row);
+});
+let fly=null;
+function select(idx){
+  sel=idx;const target=markers[idx].pos;buildRoute(target);
+  controls.autoRotate=false;document.getElementById('rotBtn').classList.remove('on');
+  markers.forEach((mk,i)=>{const on=i===idx;mk.el.classList.toggle('sel',on);mk.el.classList.toggle('dim',mk.dest&&!on);mk.dot.scale.setScalar(on?1.6:1);mk.ring.visible=on||!mk.dest;});
+  document.querySelectorAll('.poi').forEach(r=>r.classList.toggle('on',+r.dataset.i===idx));
+  const dir=new THREE.Vector3(target.x,0,target.z).normalize();if(dir.lengthSq()<.01)dir.set(0,0,1);
+  fly={look:new THREE.Vector3(target.x*0.4,target.y*0.7+H*0.12,target.z*0.4),
+       pos:new THREE.Vector3(target.x+dir.x*MAX*0.9,target.y+H*0.35+MAX*0.3,fz+MAX*1.0)};
+}
+
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=0.07;controls.autoRotate=true;controls.autoRotateSpeed=0.55;
+controls.maxPolarAngle=Math.PI*0.49;
+controls.addEventListener('start',()=>{fly=null;});
+function frame(){const d=MAX*1.5;camera.position.set(d*0.6,H*0.9+d*0.5,d);controls.target.set(0,H*0.4,0);controls.update();}
 frame();
 
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);labelRenderer.setSize(innerWidth,innerHeight);});
 document.getElementById('rotBtn').onclick=function(){controls.autoRotate=!controls.autoRotate;this.classList.toggle('on',controls.autoRotate);};
 document.getElementById('edgeBtn').onclick=function(){edges.visible=!edges.visible;this.classList.toggle('on',edges.visible);};
-document.getElementById('resetBtn').onclick=frame;
+document.getElementById('resetBtn').onclick=()=>{frame();controls.autoRotate=true;document.getElementById('rotBtn').classList.add('on');};
 document.getElementById('loading').style.display='none';
-function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);}
-loop();
-window.__viewer={tris:m.triangles,verts:m.vertices};
+
+let t0=performance.now();
+function loop(t){requestAnimationFrame(loop);const dt=Math.min(0.05,(t-t0)/1000||0);t0=t;
+  if(fly){camera.position.lerp(fly.pos,0.06);controls.target.lerp(fly.look,0.06);if(camera.position.distanceTo(fly.pos)<2)fly=null;}
+  if(curve){pulseT=(pulseT+dt*0.14)%1;pulse.position.copy(curve.getPointAt(pulseT));}
+  controls.update();renderer.render(scene,camera);labelRenderer.render(scene,camera);
+}
+loop(performance.now());
+// default: select first destination
+select(markers.findIndex(x=>x.dest));
+window.__viewer={tris:m.triangles,pois:POIS.length,dests:POIS.filter(p=>p.dest).length};
 </script>
 </body>
 </html>
