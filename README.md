@@ -11,7 +11,9 @@ Live: https://besucherfuehrung-sektor10.vercel.app
 - Mieterverzeichnis mit Suche & Kategorie-Filter
 - Live-Status pro Mieter (offen/geschlossen, aus Öffnungszeiten berechnet)
 - Detail-Panel: Turn-by-turn-Wegbeschreibung, Kontakt, Öffnungszeiten, Hinweise
-- Interaktive Gelände-Karte mit animierter Route ab Besucherparkplatz
+- **3D-Kartenansicht (Exploded Isometric)** — gestapelte Etagen (UG/EG/1.OG), aktive Etage hervorgehoben, glühende Route vom Parkplatz zum Ziel, Kamera-Fly-to bei Mieterwahl, Etagen-Explode-Toggle (Three.js + Bloom)
+- 2D/3D-Umschalter mit automatischem 2D-Fallback ohne WebGL
+- Interaktive Gelände-Karte (2D) mit animierter Route ab Besucherparkplatz
 - Echte Stockwerk-Grundrisse (UG / EG / 1. OG) mit Hervorhebung des Mieters
 - QR-Code zum Teilen der Route, Druckansicht
 - Umgebungs-PDF & Fassadenansichten
@@ -28,8 +30,10 @@ Live: https://besucherfuehrung-sektor10.vercel.app
 
 ## Tech
 
-Single-file Static App: HTML + CSS + Vanilla JS, SVG-Karten, Tabler Icons,
-QRCode.js. Deployment auf Vercel (statisch, kein Build-Step).
+Single-file Static App: HTML + CSS + Vanilla JS, Tabler Icons, QRCode.js.
+3D-Ansicht mit Three.js r0.169 (vanilla, via ESM-Import-Map von jsDelivr —
+kein Build-Step), OrbitControls, CSS2DRenderer, UnrealBloomPass. Lazy-Load
+nur für die 3D-Ansicht, 2D-SVG als Fallback. Deployment auf Vercel (statisch).
 
 ## Entwicklung
 
@@ -41,7 +45,9 @@ npx http-server . -p 4321
 
 ## Roadmap
 
-- Migration auf Next.js + Supabase (Mieter- & Marker-Daten aus DB)
-- Hochwertige isometrische 3D-Grundrisse
+- 3D-Ausbau: Etagen-Wände/Räume, Routen-Modus mit Richtungspfeilen, Treppe/Lift als vertikale Connectoren, Info-Hierarchie (Schritt 2–8 der Roadmap)
+- Editor 3D-fähig (Marker/Wege direkt in der Szene setzen, `floor`-Feld pro Marker)
+- Mobile-Tuning: On-demand-Rendering, Touch-Gesten, Safari-iOS-Test
+- Migration auf Next.js + Supabase (Mieter- & Marker-Daten aus DB) / optional React Three Fiber
 - Mehrsprachigkeit (DE / EN / FR)
 - Multi-Areal-Verwaltung
