@@ -785,6 +785,8 @@ const M3D=(function(){
   let ready=false,loading=false,unsupported=false,visible=false;
   let bmesh=null,markerObjs=[],routeGroup,pulse,curve=null,pulseT=0,lastT=0;
   let activeSlug=null,activeFloor='eg',fly=null,bdata=null;
+  let ENTRY={},ray,_v,_v2,_v3,lblTick=0;
+  const SIDENM={nord:'Nord',sued:'Süd',ost:'Ost',west:'West'};
   let SX=150,SZ=160,H=60,MAX=160,FZ=80;
   const REDUCE=matchMedia('(prefers-reduced-motion:reduce)').matches;
   const BANDY={ug:0.05,eg:0.20,og:0.56};
@@ -815,17 +817,37 @@ const M3D=(function(){
     }
   }
 
+  function sideOf(entry){const e=(entry||'').toLowerCase();if(e.indexOf('sü')>=0||e.indexOf('sue')>=0||e.indexOf('sud')>=0)return 'sued';if(e.indexOf('nord')>=0)return 'nord';if(e.indexOf('ost')>=0)return 'ost';if(e.indexOf('west')>=0)return 'west';return 'nord';}
+  function levelY(f){const sH=H/Math.max(1,Math.round(H/3.4));return (f==='og'?1.5:f==='ug'?-0.4:0.5)*sH;}
+  function computeEntries(){
+    const y=H*0.10, big=MAX*2, sides={nord:[0,-1],sued:[0,1],ost:[1,0],west:[-1,0]};
+    ENTRY={};
+    Object.keys(sides).forEach(k=>{
+      const dx=sides[k][0],dz=sides[k][1];
+      ray.set(new THREE.Vector3(dx*big,y,dz*big), new THREE.Vector3(-dx,0,-dz).normalize());
+      const hit=ray.intersectObject(bmesh,false)[0];
+      if(hit){ENTRY[k]={p:hit.point.clone(),n:new THREE.Vector3(dx,0,dz).normalize()};}
+      else{ENTRY[k]={p:new THREE.Vector3(dx*SX/2,y,dz*SZ/2),n:new THREE.Vector3(dx,0,dz).normalize()};}
+    });
+  }
   function layout(){
     TPOS={};
-    const eg=T.filter(t=>t.floor==='eg'), og=T.filter(t=>t.floor==='og');
-    const place=(arr,band)=>arr.forEach((t,i)=>{const fx=arr.length>1?(i/(arr.length-1)-0.5):0;TPOS[t.slug]={f:t.floor,pos:new THREE.Vector3(fx*SX*0.6,H*band,FZ+2.5)};});
-    place(eg,BANDY.eg);place(og,BANDY.og);
-    INFRA=[
-      {key:'parking',name:'Besucherparkplatz',c:0x94a3b8,pos:new THREE.Vector3(0,0.5,FZ+MAX*0.34)},
-      {key:'entrance',name:'Haupteingang',c:0x34d399,pos:new THREE.Vector3(0,0.5,FZ+4)},
-      {key:'sammel',name:'Notfall-Sammelplatz',c:0x38bdf8,pos:new THREE.Vector3(-SX*0.6,0.5,FZ+MAX*0.18)},
-      {key:'rampe',name:'Anlieferung',c:0xf87171,pos:new THREE.Vector3(SX*0.62,0.5,0)}
-    ];
+    const groups={};
+    T.forEach(t=>{const s=sideOf(t.entry);(groups[s]=groups[s]||[]).push(t);});
+    Object.keys(groups).forEach(side=>{
+      const e=ENTRY[side]||ENTRY.nord, tan=new THREE.Vector3(-e.n.z,0,e.n.x), arr=groups[side];
+      arr.forEach((t,i)=>{
+        const spread=(arr.length>1?(i/(arr.length-1)-0.5):0)*Math.min(SX,SZ)*0.42;
+        const pos=e.p.clone().addScaledVector(e.n,3).addScaledVector(tan,spread);
+        pos.y=levelY(t.floor);
+        TPOS[t.slug]={f:t.floor,pos,side};
+      });
+    });
+    INFRA=[];
+    Object.keys(ENTRY).forEach(side=>{const e=ENTRY[side];INFRA.push({key:'ent_'+side,name:'Eingang '+SIDENM[side],c:0x34d399,pos:e.p.clone().addScaledVector(e.n,2.5).setY(1.6)});});
+    const mainSide=ENTRY.west?'west':Object.keys(ENTRY)[0], me=ENTRY[mainSide], tan=new THREE.Vector3(-me.n.z,0,me.n.x);
+    INFRA.push({key:'parking',name:'Besucherparkplatz',c:0x94a3b8,pos:me.p.clone().addScaledVector(me.n,MAX*0.38).setY(0.6)});
+    INFRA.push({key:'sammel',name:'Notfall-Sammelplatz',c:0x38bdf8,pos:me.p.clone().addScaledVector(me.n,MAX*0.30).addScaledVector(tan,MAX*0.22).setY(0.6)});
   }
 
   function build(){
@@ -851,10 +873,11 @@ const M3D=(function(){
     const bb=geo.boundingBox,s=new THREE.Vector3();bb.getSize(s);
     geo.translate(-(bb.min.x+bb.max.x)/2,0,-(bb.min.z+bb.max.z)/2);
     SX=s.x;SZ=s.z;H=s.y;MAX=Math.max(SX,SZ);FZ=SZ/2;
-    bmesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x1b2533,metalness:0.15,roughness:0.82}));scene.add(bmesh);
+    bmesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x1b2533,metalness:0.15,roughness:0.82,side:THREE.DoubleSide}));scene.add(bmesh);
     bmesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo,24),new THREE.LineBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.5})));
     const grid=new THREE.GridHelper(MAX*4,44,0x1d3a44,0x122027);grid.material.transparent=true;grid.material.opacity=0.45;scene.add(grid);
-    layout();
+    ray=new THREE.Raycaster();_v=new THREE.Vector3();_v2=new THREE.Vector3();_v3=new THREE.Vector3();
+    computeEntries();layout();
     Object.keys(TPOS).forEach(slug=>addMarker(slug,true));
     INFRA.forEach(o=>addMarker(o.key,false));
     routeGroup=new THREE.Group();scene.add(routeGroup);
@@ -876,14 +899,17 @@ const M3D=(function(){
     div.innerHTML=(isTenant?`<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${hex}"></span>`:'')+name;
     if(isTenant){div.style.cursor='pointer';div.onclick=()=>pick(TIDX[key]);}
     const lo=new CSS2DObject(div);lo.position.set(0,R+2.5,0);m.add(lo);
-    markerObjs.push({key,mesh:m,ring,label:div,isTenant,floor:isTenant?TPOS[key].f:'ground'});
+    const rank=isTenant?1:(key.indexOf('ent_')===0?3:key==='sammel'?3:2);
+    markerObjs.push({key,mesh:m,ring,label:div,isTenant,floor:isTenant?TPOS[key].f:'ground',rank});
   }
 
   function buildRoute(slug){
     while(routeGroup.children.length)routeGroup.remove(routeGroup.children[0]);
     const t=TPOS[slug];if(!t){pulse.visible=false;curve=null;return;}
-    const park=INFRA[0].pos,ent=INFRA[1].pos,tg=t.pos;
-    const pts=[park.clone(),ent.clone(),new THREE.Vector3(tg.x,2,FZ+3),tg.clone()];
+    const park=(INFRA.find(o=>o.key==='parking')||{}).pos||new THREE.Vector3(0,0.6,FZ+MAX*0.38);
+    const e=ENTRY[t.side]||ENTRY.nord, tg=t.pos;
+    const entG=e.p.clone().addScaledVector(e.n,2.5);entG.y=0.8;
+    const pts=[park.clone(),entG,new THREE.Vector3(tg.x,2,tg.z),tg.clone()];
     curve=new THREE.CatmullRomCurve3(pts,false,'catmullrom',0.1);
     const r=Math.max(0.5,MAX*0.006);
     routeGroup.add(new THREE.Mesh(new THREE.TubeGeometry(curve,160,r,10,false),new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.9})));
@@ -919,12 +945,39 @@ const M3D=(function(){
     if(instant&&fly){camera.position.copy(fly.pos);controls.target.copy(fly.tgt);controls.update();fly=null;}
   }
 
+  function updateLabels(){
+    if(!bmesh||!ray)return;
+    const el0=container(),w=el0.clientWidth,h=el0.clientHeight,camPos=camera.position,list=[];
+    for(const mo of markerObjs){
+      mo.mesh.getWorldPosition(_v);
+      _v2.copy(_v).sub(camPos);const dist=_v2.length();_v2.normalize();
+      ray.set(camPos,_v2);const hit=ray.intersectObject(bmesh,false)[0];
+      const occ=hit&&hit.distance<dist-1.2;
+      _v3.copy(_v).project(camera);
+      const on=_v3.z<1&&_v3.x>-1.05&&_v3.x<1.05&&_v3.y>-1.05&&_v3.y<1.05;
+      const sel=mo.isTenant&&mo.key===activeSlug;
+      list.push({mo,occ,on,sel,sx:(_v3.x*0.5+0.5)*w,sy:(-_v3.y*0.5+0.5)*h});
+    }
+    list.sort((a,b)=>(b.sel-a.sel)||(b.mo.rank-a.mo.rank));
+    const placed=[];
+    for(const c of list){
+      const el=c.mo.label;let show=c.on&&!c.occ;
+      if(show){
+        const bw=el.offsetWidth||90,bh=el.offsetHeight||22;
+        const box={l:c.sx-bw/2,r:c.sx+bw/2,t:c.sy-bh*1.5,b:c.sy+2};
+        let ov=false;for(const q of placed){if(!(box.r<q.l||box.l>q.r||box.b<q.t||box.t>q.b)){ov=true;break;}}
+        if(ov&&!c.sel)show=false;else placed.push(box);
+      }
+      el.style.visibility=show?'visible':'hidden';
+    }
+  }
+
   function loop(t){
     raf=requestAnimationFrame(loop);
     const dt=Math.min(0.05,(t-lastT)/1000||0);lastT=t;
     if(fly){camera.position.lerp(fly.pos,0.08);controls.target.lerp(fly.tgt,0.08);if(camera.position.distanceTo(fly.pos)<MAX*0.025)fly=null;}
     if(curve&&pulse.visible&&!REDUCE){pulseT=(pulseT+dt*0.14)%1;pulse.position.copy(curve.getPointAt(pulseT));}
-    controls.update();composer.render();labelRenderer.render(scene,camera);
+    controls.update();if((lblTick++%3)===0)updateLabels();composer.render();labelRenderer.render(scene,camera);
   }
 
   function resume(){if(!raf&&ready){lastT=performance.now();raf=requestAnimationFrame(loop);}}
