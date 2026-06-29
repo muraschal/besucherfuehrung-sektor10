@@ -783,23 +783,13 @@ const M3D=(function(){
   let THREE,OrbitControls,CSS2DRenderer,CSS2DObject,EffectComposer,RenderPass,UnrealBloomPass,OutputPass;
   let renderer,labelRenderer,scene,camera,controls,composer,raf=null;
   let ready=false,loading=false,unsupported=false,visible=false;
-  let floors={},markerObjs=[],routeGroup,pulse,curve=null,pulseT=0,lastT=0;
-  let activeFloor='eg',activeSlug=null,explode=1,explodeTarget=1;
-  let fly=null;
-  const W=44,Dp=44,SLAB=1.0,GAP=7.2,REDUCE=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const FIDX={ug:0,eg:1,og:2};
-  const COL={cyan:0x22d3ee,slab:0x141a22,edge:0x22d3ee,ground:0x0c1418};
-  // curated 3D positions (x/y in %, floor) — controllable & clean
-  const TPOS={kanalfrei:{f:'eg',x:37,y:35},steiner:{f:'eg',x:37,y:62},vogt:{f:'eg',x:64,y:35},
-    luethi:{f:'og',x:64,y:34},lehner:{f:'og',x:50,y:33},meridian:{f:'og',x:64,y:63},nordwand:{f:'og',x:37,y:63},brunner:{f:'og',x:37,y:34}};
-  const INFRA=[{key:'parking',name:'Besucherparkplatz',x:82,y:90,c:0x94a3b8},
-    {key:'entrance',name:'Eingang West',x:42,y:80,c:0x34d399},
-    {key:'rampe',name:'Rampe UG Nord',x:24,y:28,c:0xf87171},
-    {key:'sammel',name:'Sammelplatz',x:64,y:88,c:0x38bdf8}];
-  const FOOT={x0:26,x1:74,y0:24,y1:74};
-  const WX=p=>(p/100-0.5)*W, WZ=p=>(p/100-0.5)*Dp;
-  const baseY=f=>FIDX[f]*(SLAB+GAP)*explode+3;
-  const topY=f=>baseY(f)+SLAB/2;
+  let bmesh=null,markerObjs=[],routeGroup,pulse,curve=null,pulseT=0,lastT=0;
+  let activeSlug=null,activeFloor='eg',fly=null,bdata=null;
+  let SX=150,SZ=160,H=60,MAX=160,FZ=80;
+  const REDUCE=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const BANDY={ug:0.05,eg:0.20,og:0.56};
+  const PILL='display:flex;align-items:center;gap:5px;background:rgba(16,20,27,.82);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:3px 9px;font:600 11px Inter,sans-serif;color:#eef1f4;white-space:nowrap;backdrop-filter:blur(6px);transform:translate(-50%,-150%);transition:opacity .2s,border-color .2s,box-shadow .2s';
+  let TPOS={},INFRA=[];
   function container(){return document.getElementById('scene3d');}
   function webglOK(){try{const c=document.createElement('canvas');const gl=c.getContext('webgl2')||c.getContext('webgl');if(!gl)return false;const lc=gl.getExtension('WEBGL_lose_context');if(lc)lc.loseContext();return true;}catch(e){return false;}}
 
@@ -813,6 +803,7 @@ const M3D=(function(){
       RenderPass=(await import('three/addons/postprocessing/RenderPass.js')).RenderPass;
       UnrealBloomPass=(await import('three/addons/postprocessing/UnrealBloomPass.js')).UnrealBloomPass;
       OutputPass=(await import('three/addons/postprocessing/OutputPass.js')).OutputPass;
+      bdata=await fetch('/apps/app/building.json').then(r=>r.json());
       build();ready=true;loading=false;
       document.getElementById('s3dLoading').classList.remove('show');
       if(activeSlug)selectTenant(activeSlug,true);
@@ -824,163 +815,129 @@ const M3D=(function(){
     }
   }
 
+  function layout(){
+    TPOS={};
+    const eg=T.filter(t=>t.floor==='eg'), og=T.filter(t=>t.floor==='og');
+    const place=(arr,band)=>arr.forEach((t,i)=>{const fx=arr.length>1?(i/(arr.length-1)-0.5):0;TPOS[t.slug]={f:t.floor,pos:new THREE.Vector3(fx*SX*0.6,H*band,FZ+2.5)};});
+    place(eg,BANDY.eg);place(og,BANDY.og);
+    INFRA=[
+      {key:'parking',name:'Besucherparkplatz',c:0x94a3b8,pos:new THREE.Vector3(0,0.5,FZ+MAX*0.34)},
+      {key:'entrance',name:'Haupteingang',c:0x34d399,pos:new THREE.Vector3(0,0.5,FZ+4)},
+      {key:'sammel',name:'Notfall-Sammelplatz',c:0x38bdf8,pos:new THREE.Vector3(-SX*0.6,0.5,FZ+MAX*0.18)},
+      {key:'rampe',name:'Anlieferung',c:0xf87171,pos:new THREE.Vector3(SX*0.62,0.5,0)}
+    ];
+  }
+
   function build(){
     const el=container(),w=el.clientWidth||800,h=el.clientHeight||500;
     renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
-    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-    renderer.setSize(w,h);
-    renderer.toneMapping=THREE.NeutralToneMapping;renderer.toneMappingExposure=1.15;
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(w,h);
+    renderer.toneMapping=THREE.NeutralToneMapping;renderer.toneMappingExposure=1.12;
     el.appendChild(renderer.domElement);
     labelRenderer=new CSS2DRenderer();labelRenderer.setSize(w,h);
-    const ld=labelRenderer.domElement;ld.style.position='absolute';ld.style.top='0';ld.style.left='0';ld.style.pointerEvents='none';
-    el.appendChild(ld);
+    const ld=labelRenderer.domElement;ld.style.position='absolute';ld.style.top='0';ld.style.left='0';ld.style.pointerEvents='none';el.appendChild(ld);
     scene=new THREE.Scene();
-    const mid=baseY('eg');
-    camera=new THREE.OrthographicCamera();camera.position.set(46,42,46);
+    camera=new THREE.PerspectiveCamera(42,w/h,0.5,9000);
     controls=new OrbitControls(camera,renderer.domElement);
-    controls.enableDamping=true;controls.dampingFactor=0.07;controls.enablePan=false;
-    controls.minPolarAngle=0.55;controls.maxPolarAngle=1.08;controls.target.set(0,mid,0);
+    controls.enableDamping=true;controls.dampingFactor=0.07;controls.enablePan=false;controls.maxPolarAngle=Math.PI*0.49;
     controls.addEventListener('start',()=>{fly=null;});
-    setFrustum(w,h,1.0);
-    scene.add(new THREE.AmbientLight(0x93a6bd,0.75));
-    const dir=new THREE.DirectionalLight(0xffffff,0.65);dir.position.set(1,2,1.4);scene.add(dir);
-    // ground grid
-    const grid=new THREE.GridHelper(W*2.1,30,0x1d3a44,0x122027);grid.position.y=0.1;
-    grid.material.transparent=true;grid.material.opacity=0.5;scene.add(grid);
-    // floors
-    ['ug','eg','og'].forEach(f=>buildFloorMesh(f));
-    // building shell hint
-    const shellH=(FIDX.og)*(SLAB+GAP)+SLAB+4;
-    const shellGeo=new THREE.BoxGeometry((WX(FOOT.x1)-WX(FOOT.x0))+2,shellH,(WZ(FOOT.y1)-WZ(FOOT.y0))+2);
-    const shell=new THREE.Mesh(shellGeo,new THREE.MeshBasicMaterial({color:COL.cyan,transparent:true,opacity:0.035,depthWrite:false,side:THREE.BackSide}));
-    shell.position.set((WX(FOOT.x0)+WX(FOOT.x1))/2,baseY('ug')-SLAB/2+shellH/2,(WZ(FOOT.y0)+WZ(FOOT.y1))/2);
-    shell.userData.shell=true;scene.add(shell);
-    // markers
-    Object.keys(TPOS).forEach(slug=>addMarker(slug,TPOS[slug],true));
-    INFRA.forEach(o=>addMarker(o.key,o,false));
+    scene.add(new THREE.HemisphereLight(0x9fb8d0,0x0a0e14,0.85));
+    const dir=new THREE.DirectionalLight(0xffffff,1.0);dir.position.set(1,1.6,1);scene.add(dir);
+    const rim=new THREE.DirectionalLight(0x22d3ee,0.5);rim.position.set(-1,0.6,-1);scene.add(rim);
+    // REAL building (swissBUILDINGS3D)
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.Float32BufferAttribute(bdata.positions,3));
+    geo.setIndex(bdata.indices);geo.computeVertexNormals();geo.computeBoundingBox();
+    const bb=geo.boundingBox,s=new THREE.Vector3();bb.getSize(s);
+    geo.translate(-(bb.min.x+bb.max.x)/2,0,-(bb.min.z+bb.max.z)/2);
+    SX=s.x;SZ=s.z;H=s.y;MAX=Math.max(SX,SZ);FZ=SZ/2;
+    bmesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x1b2533,metalness:0.15,roughness:0.82}));scene.add(bmesh);
+    bmesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo,24),new THREE.LineBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.5})));
+    const grid=new THREE.GridHelper(MAX*4,44,0x1d3a44,0x122027);grid.material.transparent=true;grid.material.opacity=0.45;scene.add(grid);
+    layout();
+    Object.keys(TPOS).forEach(slug=>addMarker(slug,true));
+    INFRA.forEach(o=>addMarker(o.key,false));
     routeGroup=new THREE.Group();scene.add(routeGroup);
-    const pg=new THREE.SphereGeometry(0.55,16,16);
-    pulse=new THREE.Mesh(pg,new THREE.MeshBasicMaterial({color:0xffffff}));pulse.visible=false;scene.add(pulse);
-    // postprocessing (bloom)
-    composer=new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene,camera));
-    const bloom=new UnrealBloomPass(new THREE.Vector2(w,h),0.7,0.4,0.85);composer.addPass(bloom);
-    composer.addPass(new OutputPass());
-    composer.setSize(w,h);
-    applyFloorStyle();
+    pulse=new THREE.Mesh(new THREE.SphereGeometry(Math.max(1,MAX*0.012),16,16),new THREE.MeshBasicMaterial({color:0xffffff}));pulse.visible=false;scene.add(pulse);
+    composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(w,h),0.7,0.4,0.85));composer.addPass(new OutputPass());composer.setSize(w,h);
+    frameOverview(true);applyStyle();
   }
 
-  function buildFloorMesh(f){
-    const g=new THREE.Group();
-    const wd=WX(FOOT.x1)-WX(FOOT.x0),dp=WZ(FOOT.y1)-WZ(FOOT.y0);
-    const cx=(WX(FOOT.x0)+WX(FOOT.x1))/2,cz=(WZ(FOOT.y0)+WZ(FOOT.y1))/2;
-    const geo=new THREE.BoxGeometry(wd,SLAB,dp);
-    const mat=new THREE.MeshStandardMaterial({color:COL.slab,transparent:true,opacity:0.9,emissive:0x0b3a44,emissiveIntensity:0.5,roughness:0.85,metalness:0.1});
-    const slab=new THREE.Mesh(geo,mat);slab.position.set(cx,0,cz);g.add(slab);
-    const edges=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:COL.edge,transparent:true,opacity:0.9}));
-    edges.position.copy(slab.position);g.add(edges);
-    g.position.y=baseY(f);scene.add(g);
-    // floor label
-    const div=document.createElement('div');div.className='lbl3d infra';div.textContent=({ug:'UG',eg:'EG',og:'1. OG'})[f];
-    const lo=new CSS2DObject(div);lo.position.set(WX(FOOT.x0)-1,0,cz);g.add(lo);
-    floors[f]={group:g,slab,mat,edges,label:div};
-  }
-
-  function addMarker(key,o,isTenant){
-    const f=isTenant?o.f:'ground';
-    const y=isTenant?topY(o.f)+0.7:0.9;
-    const col=isTenant?(T[TIDX[key]]?parseInt(T[TIDX[key]].color.slice(1),16):0x22d3ee):o.c;
-    const geo=new THREE.SphereGeometry(0.7,18,18);
-    const m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:col}));
-    m.position.set(WX(o.x),y,WZ(o.y));scene.add(m);
-    const ring=new THREE.Mesh(new THREE.RingGeometry(0.95,1.25,24),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.55,side:THREE.DoubleSide}));
-    ring.rotation.x=-Math.PI/2;ring.position.copy(m.position);ring.position.y-=0.6;scene.add(ring);
-    const div=document.createElement('div');div.className='lbl3d'+(isTenant?'':' infra');
-    div.innerHTML=(isTenant?`<span class="d" style="background:${T[TIDX[key]]?T[TIDX[key]].color:'#22d3ee'}"></span>`:'')+(isTenant?(T[TIDX[key]]?T[TIDX[key]].name:key):o.name);
-    if(isTenant){div.onclick=()=>{pick(TIDX[key]);};}
-    const lo=new CSS2DObject(div);lo.position.set(0,1.2,0);m.add(lo);
-    markerObjs.push({key,mesh:m,ring,label:div,isTenant,floor:f});
+  function addMarker(key,isTenant){
+    const R=Math.max(1.5,MAX*0.016);
+    let pos,col,name,hex;
+    if(isTenant){pos=TPOS[key].pos;hex=T[TIDX[key]]?T[TIDX[key]].color:'#22d3ee';col=parseInt(hex.slice(1),16);name=T[TIDX[key]]?T[TIDX[key]].name:key;}
+    else{const o=INFRA.find(x=>x.key===key);pos=o.pos;col=o.c;name=o.name;hex='#22d3ee';}
+    const m=new THREE.Mesh(new THREE.SphereGeometry(R,18,18),new THREE.MeshBasicMaterial({color:col}));m.position.copy(pos);scene.add(m);
+    const ring=new THREE.Mesh(new THREE.RingGeometry(R*1.4,R*1.95,28),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.5,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.copy(pos);ring.position.y-=R*0.8;scene.add(ring);
+    if(isTenant){const lg=new THREE.BufferGeometry().setFromPoints([pos.clone(),new THREE.Vector3(pos.x,0.6,pos.z)]);scene.add(new THREE.Line(lg,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.25})));}
+    const div=document.createElement('div');div.style.cssText=PILL;if(!isTenant)div.style.color='#cfd6df';
+    div.innerHTML=(isTenant?`<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${hex}"></span>`:'')+name;
+    if(isTenant){div.style.cursor='pointer';div.onclick=()=>pick(TIDX[key]);}
+    const lo=new CSS2DObject(div);lo.position.set(0,R+2.5,0);m.add(lo);
+    markerObjs.push({key,mesh:m,ring,label:div,isTenant,floor:isTenant?TPOS[key].f:'ground'});
   }
 
   function buildRoute(slug){
     while(routeGroup.children.length)routeGroup.remove(routeGroup.children[0]);
     const t=TPOS[slug];if(!t){pulse.visible=false;curve=null;return;}
-    const park=INFRA[0],ent=INFRA[1],fy=topY(t.f)+1.1;
-    const pts=[new THREE.Vector3(WX(park.x),1.3,WZ(park.y)),
-      new THREE.Vector3(WX(ent.x),1.3,WZ(ent.y)),
-      new THREE.Vector3(WX(ent.x),fy,WZ(ent.y)),
-      new THREE.Vector3(WX(t.x),fy,WZ(t.y))];
-    curve=new THREE.CatmullRomCurve3(pts,false,'catmullrom',0.12);
-    const tube=new THREE.Mesh(new THREE.TubeGeometry(curve,120,0.22,10,false),new THREE.MeshBasicMaterial({color:COL.cyan,transparent:true,opacity:0.85}));
-    routeGroup.add(tube);
+    const park=INFRA[0].pos,ent=INFRA[1].pos,tg=t.pos;
+    const pts=[park.clone(),ent.clone(),new THREE.Vector3(tg.x,2,FZ+3),tg.clone()];
+    curve=new THREE.CatmullRomCurve3(pts,false,'catmullrom',0.1);
+    const r=Math.max(0.5,MAX*0.006);
+    routeGroup.add(new THREE.Mesh(new THREE.TubeGeometry(curve,160,r,10,false),new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:0.9})));
     pulse.visible=true;pulseT=0;
   }
 
-  function applyFloorStyle(){
-    ['ug','eg','og'].forEach(f=>{
-      const fl=floors[f],act=f===activeFloor;
-      fl.mat.opacity=act?0.92:0.12;fl.mat.emissiveIntensity=act?0.8:0.12;
-      fl.edges.material.opacity=act?0.95:0.22;
-      fl.label.classList.toggle('active',act);fl.label.classList.toggle('dim',!act);
-    });
+  function applyStyle(){
+    const known=(activeFloor==='eg'||activeFloor==='og');
     markerObjs.forEach(mo=>{
-      const act=mo.isTenant?TPOS[mo.key].f===activeFloor:true;
+      const band=mo.isTenant?(!known||mo.floor===activeFloor):true;
       const isSel=mo.isTenant&&mo.key===activeSlug;
-      mo.mesh.scale.setScalar(isSel?1.5:(act?1:0.62));
+      mo.mesh.scale.setScalar(isSel?1.7:(band?1:0.6));
       mo.ring.visible=isSel;
-      mo.label.classList.toggle('dim',!act&&!isSel);
-      mo.label.classList.toggle('active',isSel);
+      mo.label.style.opacity=(mo.isTenant&&!band&&!isSel)?'0.4':'1';
+      mo.label.style.borderColor=isSel?'#22d3ee':'rgba(255,255,255,.14)';
+      mo.label.style.boxShadow=isSel?'0 0 14px rgba(34,211,238,.5)':'none';
     });
     document.querySelectorAll('#floorpick button').forEach(b=>b.classList.toggle('on',b.dataset.f===activeFloor));
   }
 
-  function setFrustum(w,h,zoom){
-    const vs=46,a=w/h;
-    camera.left=-vs*a/2;camera.right=vs*a/2;camera.top=vs/2;camera.bottom=-vs/2;
-    camera.near=-200;camera.far=600;camera.zoom=zoom||camera.zoom||1;camera.updateProjectionMatrix();
+  function frameOverview(instant){
+    const d=MAX*1.5,pos=new THREE.Vector3(d*0.55,H*0.9+d*0.5,FZ+d),tgt=new THREE.Vector3(0,H*0.4,0);
+    if(instant){camera.position.copy(pos);controls.target.copy(tgt);controls.update();}else fly={pos,tgt};
   }
-
-  function flyTo(pos,tgt,zoom){fly={pos:new THREE.Vector3(pos.x,pos.y,pos.z),tgt:new THREE.Vector3(tgt.x,tgt.y,tgt.z),zoom:zoom};}
-
+  function flyToTenant(slug){
+    const t=TPOS[slug];if(!t)return;const tg=t.pos;const dx=tg.x>=0?1:-1;
+    fly={pos:new THREE.Vector3(tg.x+dx*MAX*0.45,tg.y+H*0.3+MAX*0.28,FZ+MAX*0.95),tgt:new THREE.Vector3(tg.x*0.45,tg.y*0.7+H*0.12,tg.z*0.4)};
+  }
   function selectTenant(slug,instant){
     activeSlug=slug;const t=TPOS[slug];if(t)activeFloor=t.f;
     if(!ready)return;
-    buildRoute(slug);applyFloorStyle();
-    if(t){const mp=new THREE.Vector3(WX(t.x),topY(t.f),WZ(t.y));
-      const off=new THREE.Vector3(26,24,26);
-      flyTo(mp.clone().add(off),mp,1.55);}
-    if(instant&&fly){camera.position.copy(fly.pos);controls.target.copy(fly.tgt);camera.zoom=fly.zoom;camera.updateProjectionMatrix();fly=null;}
+    buildRoute(slug);applyStyle();flyToTenant(slug);
+    if(instant&&fly){camera.position.copy(fly.pos);controls.target.copy(fly.tgt);controls.update();fly=null;}
   }
 
   function loop(t){
     raf=requestAnimationFrame(loop);
     const dt=Math.min(0.05,(t-lastT)/1000||0);lastT=t;
-    explode+=(explodeTarget-explode)*0.12;
-    if(Math.abs(explodeTarget-explode)>0.002)relayoutFloors();
-    if(fly){camera.position.lerp(fly.pos,0.09);controls.target.lerp(fly.tgt,0.09);
-      camera.zoom+=(fly.zoom-camera.zoom)*0.09;camera.updateProjectionMatrix();
-      if(camera.position.distanceTo(fly.pos)<0.4)fly=null;}
-    if(curve&&pulse.visible&&!REDUCE){pulseT=(pulseT+dt*0.16)%1;pulse.position.copy(curve.getPointAt(pulseT));}
-    controls.update();
-    composer.render();labelRenderer.render(scene,camera);
-  }
-  function relayoutFloors(){
-    ['ug','eg','og'].forEach(f=>{floors[f].group.position.y=baseY(f);});
-    markerObjs.forEach(mo=>{if(mo.isTenant){mo.mesh.position.y=topY(TPOS[mo.key].f)+0.7;mo.ring.position.y=mo.mesh.position.y-0.6;}});
-    if(activeSlug)buildRoute(activeSlug);
+    if(fly){camera.position.lerp(fly.pos,0.08);controls.target.lerp(fly.tgt,0.08);if(camera.position.distanceTo(fly.pos)<MAX*0.025)fly=null;}
+    if(curve&&pulse.visible&&!REDUCE){pulseT=(pulseT+dt*0.14)%1;pulse.position.copy(curve.getPointAt(pulseT));}
+    controls.update();composer.render();labelRenderer.render(scene,camera);
   }
 
   function resume(){if(!raf&&ready){lastT=performance.now();raf=requestAnimationFrame(loop);}}
   function pause(){if(raf){cancelAnimationFrame(raf);raf=null;}}
-  function resize(){if(!ready)return;const el=container(),w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;renderer.setSize(w,h);labelRenderer.setSize(w,h);composer.setSize(w,h);setFrustum(w,h);}
+  function resize(){if(!ready)return;const el=container(),w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;renderer.setSize(w,h);labelRenderer.setSize(w,h);composer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
 
   return {
     show(){if(unsupported){want3D=false;updateMapMode();return;}visible=true;if(!ready){if(!loading&&webglOK())load();else if(!webglOK()){unsupported=true;want3D=false;updateMapMode();}return;}resize();resume();},
     hide(){visible=false;pause();},
     selectTenant(slug){activeSlug=slug;if(ready)selectTenant(slug);},
-    setFloor(f){activeFloor=f;if(ready){applyFloorStyle();const cz=(WZ(FOOT.y0)+WZ(FOOT.y1))/2,mp=new THREE.Vector3(0,topY(f),cz);flyTo(mp.clone().add(new THREE.Vector3(30,26,30)),new THREE.Vector3(0,baseY(f),0),1.15);}},
-    preset(which){if(!ready)return;if(which==='overview'){explodeTarget=1.35;flyTo(new THREE.Vector3(46,42,46),new THREE.Vector3(0,baseY('eg'),0),0.92);}else{if(activeSlug)selectTenant(activeSlug);}},
-    toggleExplode(){explodeTarget=explodeTarget>1.2?1:1.6;},
+    setFloor(f){activeFloor=f;if(ready){applyStyle();frameOverview(false);}},
+    preset(which){if(!ready)return;if(which==='overview')frameOverview(false);else if(activeSlug)selectTenant(activeSlug);},
+    toggleExplode(){if(ready)frameOverview(false);},
     resize(){resize();}
   };
 })();

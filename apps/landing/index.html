@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -91,7 +92,16 @@ h1{font-size:clamp(36px,5.2vw,62px);font-weight:800;margin-bottom:22px}
 .live-tag{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--cyan-br);background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.3);padding:2px 8px;border-radius:20px;margin-left:auto}
 .live-tag .d{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s infinite}
 .viewport{position:relative;width:100%;aspect-ratio:1300/812;overflow:hidden;background:#0a0b0e;border-radius:0 0 4px 4px}
-.viewport iframe{position:absolute;top:0;left:0;width:1300px;height:812px;border:0;transform-origin:top left}
+.viewport canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block}
+.viewport .vlabel{position:absolute;left:12px;bottom:10px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--cyan-br);background:rgba(7,8,11,.6);border:1px solid rgba(34,211,238,.25);border-radius:20px;padding:4px 10px;backdrop-filter:blur(6px);z-index:2;pointer-events:none}
+.demo-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:820px;margin:0 auto}
+.demo-card{display:flex;gap:16px;align-items:center;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:22px;transition:all .18s}
+.demo-card:hover{border-color:rgba(34,211,238,.4);transform:translateY(-2px);box-shadow:0 0 40px -18px var(--cyan-glow)}
+.demo-card .dc-ic{width:50px;height:50px;border-radius:13px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--cyan);flex-shrink:0}
+.demo-card .dc-t{font-size:16px;font-weight:600;margin-bottom:3px}
+.demo-card .dc-s{font-size:13px;color:var(--mid)}
+.demo-card .dc-go{margin-left:auto;color:var(--cyan);font-size:20px}
+@media(max-width:640px){.demo-cards{grid-template-columns:1fr}}
 .hinge{height:12px;background:linear-gradient(180deg,#2a313c,#10141b);border-radius:0 0 16px 16px;border:1px solid var(--line-strong);border-top:none;position:relative}
 .hinge::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:84px;height:5px;background:#06090d;border-radius:0 0 6px 6px}
 .ipad-float{position:absolute;right:-8%;bottom:-10%;width:200px;z-index:2;transform:perspective(1500px) rotateY(-15deg) rotateX(4deg);filter:drop-shadow(0 34px 50px rgba(0,0,0,.6))}
@@ -367,7 +377,7 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
       <div class="lid">
         <div class="bbar"><div class="dots"><i></i><i></i><i></i></div>
           <div class="urlbar"><i class="ti ti-lock"></i>lotse.rapold.io/app<span class="live-tag"><span class="d"></span>LIVE</span></div></div>
-        <div class="viewport" id="heroVp"><div class="loadframe"><div class="sp"></div>Live-3D-Karte wird geladen…</div></div>
+        <div class="viewport"><canvas id="heroCanvas"></canvas><div class="vlabel">swissBUILDINGS3D · Zürich · live</div></div>
       </div>
       <div class="hinge"></div>
     </div>
@@ -493,13 +503,18 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
 
 <!-- INTERACTIVE DEMO -->
 <section class="sec" id="demo"><div class="wrap">
-  <div class="sec-head reveal"><div class="eyebrow">Selbst ausprobieren</div><h2>Drehen Sie die Karte. Klicken Sie eine Route.</h2><p>Direkt hier auf der Seite — ohne Anmeldung, ohne Download. Genau so läuft Lotse im Browser.</p></div>
-  <div class="demo-frame reveal" id="demoFrame">
-    <div class="demo-ph" id="demoPh">
-      <i class="ti ti-player-play" style="font-size:46px;color:var(--cyan)"></i>
-      <div style="text-align:center"><div style="font-size:17px;font-weight:600">Live-Karte starten</div><div style="font-size:13px;color:var(--low);margin-top:4px">Echte interaktive 3D-Karte · kein Video</div></div>
-      <button class="btn btn-pri" onclick="startDemo()"><i class="ti ti-bolt"></i>Demo laden</button>
-    </div>
+  <div class="sec-head reveal"><div class="eyebrow">Selbst ausprobieren</div><h2>Drehen Sie das echte Gebäude. Folgen Sie der Route.</h2><p>Oben im Bild läuft bereits ein reales Schweizer Gebäude (swissBUILDINGS3D) — ziehen Sie es mit der Maus. Tiefer eintauchen:</p></div>
+  <div class="demo-cards reveal">
+    <a class="demo-card" href="/building" id="demoBuilding">
+      <span class="dc-ic"><i class="ti ti-building-skyscraper"></i></span>
+      <span><span class="dc-t">Echtes 3D-Gebäude erkunden</span><span class="dc-s">Reales swisstopo-Gebäude mit Orten &amp; leuchtender Route</span></span>
+      <i class="ti ti-arrow-right dc-go"></i>
+    </a>
+    <a class="demo-card" href="/app" id="demoApp">
+      <span class="dc-ic"><i class="ti ti-map-2"></i></span>
+      <span><span class="dc-t">Volle App öffnen</span><span class="dc-s">Mieterverzeichnis, Etagen, Wegführung, Editor</span></span>
+      <i class="ti ti-arrow-right dc-go"></i>
+    </a>
   </div>
   <p class="demo-hint">Das ist nur ein Ausschnitt. <a href="#kontakt">Sehen Sie Lotse an Ihrer eigenen Liegenschaft ›</a></p>
 </div></section>
@@ -684,13 +699,9 @@ const FAQ=[
 ];
 document.getElementById('faqList').innerHTML=FAQ.map(f=>`<details><summary>${f[0]}<i class="ti ti-plus ic"></i></summary><div class="ans">${f[1]}</div></details>`).join('');
 
-/* hero live app embed (mount on load) + demo */
-function mountHero(){const c=document.getElementById('heroVp');if(!c||c.dataset.m)return;c.dataset.m='1';const f=document.createElement('iframe');f.title='Lotse Live-3D-Karte';f.loading='eager';f.onload=()=>{const l=c.querySelector('.loadframe');if(l)l.style.display='none';fitHero();};f.src=APP_URL+'?embed=1';c.appendChild(f);fitHero();}
-function fitHero(){const c=document.getElementById('heroVp');if(!c)return;const f=c.querySelector('iframe');if(f)f.style.transform='scale('+(c.clientWidth/1300)+')';}
-function startDemo(){const fr=document.getElementById('demoFrame');if(fr.dataset.m)return;fr.dataset.m='1';const f=document.createElement('iframe');f.title='Lotse interaktive Demo';f.src=APP_URL;fr.appendChild(f);document.getElementById('demoPh').style.display='none';}
-window.addEventListener('resize',fitHero);
-if(document.readyState==='complete')mountHero();else window.addEventListener('load',mountHero);
-setTimeout(mountHero,600);
+/* demo links (kein iframe) */
+const BUILD_URL=(location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.port==='4321')?'/apps/building/index.html':'/building';
+{const _db=document.getElementById('demoBuilding');if(_db)_db.href=BUILD_URL;const _da=document.getElementById('demoApp');if(_da)_da.href=APP_URL;}
 
 /* nav scroll + sticky cta */
 const nav=document.getElementById('nav'),sticky=document.getElementById('stickyCta');
@@ -714,6 +725,48 @@ function submitLead(e){e.preventDefault();const f=e.target;if(f.website.value){r
   const body=encodeURIComponent('Name: '+name+'\nLiegenschaft/Organisation: '+org+'\nE-Mail: '+mail);
   try{window.location.href='mailto:hello@rapold.io?subject='+encodeURIComponent('Lotse Demo-Anfrage: '+org)+'&body='+body;}catch(_){}
   return false;}
+</script>
+<script type="module">
+try{
+  const THREE=await import('three');
+  const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
+  const canvas=document.getElementById('heroCanvas');
+  if(canvas){
+    const data=await fetch('/apps/building/building.json').then(r=>r.json());
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.toneMapping=THREE.NeutralToneMapping;renderer.toneMappingExposure=1.1;
+    const scene=new THREE.Scene();
+    const camera=new THREE.PerspectiveCamera(40,16/10,0.5,6000);
+    function size(){const r=canvas.getBoundingClientRect();if(!r.width)return;renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();}
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.Float32BufferAttribute(data.positions,3));
+    geo.setIndex(data.indices);geo.computeVertexNormals();geo.computeBoundingBox();
+    const bb=geo.boundingBox,s=new THREE.Vector3();bb.getSize(s);
+    geo.translate(-(bb.min.x+bb.max.x)/2,0,-(bb.min.z+bb.max.z)/2);
+    const SX=s.x,SZ=s.z,H=s.y,MAX=Math.max(SX,SZ);
+    const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x1b2533,metalness:.15,roughness:.82}));scene.add(mesh);
+    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo,24),new THREE.LineBasicMaterial({color:0x22d3ee,transparent:true,opacity:.5})));
+    const grid=new THREE.GridHelper(MAX*4,40,0x16323a,0x0e1a20);grid.material.transparent=true;grid.material.opacity=.45;scene.add(grid);
+    scene.add(new THREE.HemisphereLight(0x9fb8d0,0x0a0e14,.9));
+    const dl=new THREE.DirectionalLight(0xffffff,1);dl.position.set(MAX,MAX*1.4,MAX*.8);scene.add(dl);
+    const rl=new THREE.DirectionalLight(0x22d3ee,.5);rl.position.set(-MAX,MAX*.6,-MAX);scene.add(rl);
+    const fz=SZ/2;
+    const pts=[new THREE.Vector3(0,1,fz+46),new THREE.Vector3(0,1,fz+3),new THREE.Vector3(SX*0.05,2,fz+2),new THREE.Vector3(SX*0.05,H*0.78,fz+2.5)];
+    const curve=new THREE.CatmullRomCurve3(pts,false,'catmullrom',.1);
+    scene.add(new THREE.Mesh(new THREE.TubeGeometry(curve,140,0.9,10,false),new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:.9})));
+    const pulse=new THREE.Mesh(new THREE.SphereGeometry(1.6,16,16),new THREE.MeshBasicMaterial({color:0xffffff}));scene.add(pulse);
+    const dest=new THREE.Mesh(new THREE.RingGeometry(3,4.4,28),new THREE.MeshBasicMaterial({color:0x22d3ee,transparent:true,opacity:.7,side:THREE.DoubleSide}));dest.position.copy(pts[3]);scene.add(dest);
+    const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.dampingFactor=.07;controls.autoRotate=true;controls.autoRotateSpeed=.6;controls.enablePan=false;controls.maxPolarAngle=Math.PI*.49;controls.minDistance=MAX*.8;controls.maxDistance=MAX*3;
+    const d=MAX*1.5;camera.position.set(d*.6,H*.9+d*.5,d);controls.target.set(0,H*.4,0);
+    size();addEventListener('resize',size);
+    const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;if(reduce)controls.autoRotate=false;
+    let t0=performance.now(),pt=0;
+    function loop(t){requestAnimationFrame(loop);const dt=Math.min(.05,(t-t0)/1000||0);t0=t;if(!reduce){pt=(pt+dt*.14)%1;pulse.position.copy(curve.getPointAt(pt));dest.scale.setScalar(1+Math.sin(t*.004)*.15);}controls.update();renderer.render(scene,camera);}
+    loop(performance.now());
+    window.__heroBuilding={tris:data.meta.triangles};
+  }
+}catch(e){console.error('hero 3d failed',e);}
 </script>
 </body>
 </html>
