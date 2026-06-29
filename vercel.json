@@ -4,6 +4,8 @@
     { "source": "/app", "destination": "/apps/app/index.html" },
     { "source": "/app/:path*", "destination": "/apps/app/index.html" },
     { "source": "/building", "destination": "/apps/building/index.html" },
+    { "source": "/impressum", "destination": "/apps/legal/impressum.html" },
+    { "source": "/datenschutz", "destination": "/apps/legal/datenschutz.html" },
     { "source": "/", "destination": "/apps/landing/index.html" }
   ]
 }

@@ -339,8 +339,8 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
       <a href="#pricing">Preise</a>
     </div>
     <div class="nav-sp"></div>
-    <div class="lang" role="group" aria-label="Sprache"><button class="on">DE</button><button onclick="langSoon()">EN</button><button onclick="langSoon()">FR</button></div>
-    <a class="btn btn-pri btn-sm" href="#kontakt"><i class="ti ti-sparkles"></i>Demo anfragen</a>
+    <div class="lang" role="group" aria-label="Sprache"><button class="on">DE</button><button title="EN folgt in Kürze" onclick="return false">EN</button><button title="FR folgt in Kürze" onclick="return false">FR</button></div>
+    <a class="btn btn-pri btn-sm" href="#kontakt"><i class="ti ti-sparkles"></i>Vorschau anfragen</a>
     <button class="burger" aria-label="Menü" onclick="document.getElementById('mobnav').classList.add('show')"><i class="ti ti-menu-2"></i></button>
   </div>
 </nav>
@@ -352,7 +352,7 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
   <a href="#usecases" onclick="closeMob()">Anwendungsfelder</a>
   <a href="#pricing" onclick="closeMob()">Preise</a>
   <a href="#faq" onclick="closeMob()">FAQ</a>
-  <a class="btn btn-pri" style="margin-top:18px;justify-content:center" href="#kontakt" onclick="closeMob()">Demo anfragen</a>
+  <a class="btn btn-pri" style="margin-top:18px;justify-content:center" href="#kontakt" onclick="closeMob()">Vorschau anfragen</a>
 </div>
 
 <!-- HERO -->
@@ -362,8 +362,8 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
     <h1>Jeder Besucher findet den Weg.<br><span class="grad">Vom Parkplatz bis zur Tür.</span></h1>
     <p class="hero-sub">Lotse verwandelt Ihre Liegenschaft in eine interaktive 3D-Karte — mit leuchtender Route, Live-Status und Etagen zum Durchblättern. Im Browser. Auf jedem Screen. Ohne App.</p>
     <div class="hero-cta">
-      <a class="btn btn-pri" href="#kontakt"><i class="ti ti-sparkles"></i>Live-Demo Ihrer Liegenschaft anfragen</a>
-      <a class="btn" href="#demo"><i class="ti ti-player-play"></i>Karte selbst ausprobieren</a>
+      <a class="btn btn-pri" href="#kontakt"><i class="ti ti-sparkles"></i>Kostenlose Vorschau anfragen</a>
+      <a class="btn" href="#demo"><i class="ti ti-player-play"></i>Karte live ausprobieren</a>
     </div>
     <div class="hero-note">
       <span><i class="ti ti-check"></i>Kein App-Download</span>
@@ -398,7 +398,7 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
 
 <!-- TRUST BAR -->
 <div class="trust"><div class="wrap trust-in">
-  <div class="coord">47.286 N / 8.143 E · live @ Industriestrasse 1283, Gontenschwil</div>
+  <div class="coord">3D-Geometrie: reales Referenzgebäude · swissBUILDINGS3D © swisstopo · live gerendert</div>
   <div class="trust-chips">
     <span class="chip"><i class="ti ti-shield-check"></i>DSG/DSGVO · CH/EU-Hosting</span>
     <span class="chip"><i class="ti ti-stack-2"></i>Echte Grundrisse UG/EG/OG</span>
@@ -416,10 +416,11 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
     <div class="ba-card after"><div class="lbl">Mit Lotse</div><div class="afterroute"><span class="dot"></span><span class="ln"></span><i class="ti ti-flag" style="color:var(--cyan)"></i></div><p style="font-size:14px;color:var(--mid)">Eine glühende Route. Vom Parkplatz bis zur Tür.</p></div>
   </div>
   <div class="stats">
-    <div class="stat reveal"><div class="n" data-count="85" data-suffix="%">0%</div><div class="t">der Besucher fragen in grossen Gebäuden nach dem Weg</div></div>
-    <div class="stat reveal" style="--i:1"><div class="n">⅓</div><div class="t">der Erstbesucher verläuft sich komplett</div></div>
-    <div class="stat reveal" style="--i:2"><div class="n" data-count="30" data-prefix="" data-suffix="%">0%</div><div class="t">der Empfangs-Kapazität gehen für Wegauskünfte drauf</div></div>
+    <div class="stat reveal"><div class="n" data-count="85" data-suffix="%">85%</div><div class="t">der Besucher fragen in grossen Gebäuden nach dem Weg</div></div>
+    <div class="stat reveal" style="--i:1"><div class="n">⅓</div><div class="t">der Erstbesucher findet den Weg nicht auf Anhieb</div></div>
+    <div class="stat reveal" style="--i:2"><div class="n" data-count="30" data-suffix="%">30%</div><div class="t">der Empfangs-Kapazität gehen für Wegauskünfte drauf</div></div>
   </div>
+  <p style="text-align:center;margin-top:18px;font-size:12px;color:var(--low)">Branchen-Richtwerte zur Einordnung — illustrativ, keine Leistungsgarantie.</p>
 </div></section>
 
 <!-- HOW -->
@@ -565,21 +566,46 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
     <button class="vtab" data-v="2"><i class="ti ti-briefcase"></i>Offices & Coworking</button>
     <button class="vtab" data-v="3"><i class="ti ti-map-2"></i>Spital · Center · Behörde</button>
   </div>
-  <div id="vpanels"></div>
+  <div id="vpanels">
+    <div class="vpanel on" data-p="0"><h3>Ihre Liegenschaft führt sich selbst — statt teurer Schilder, die beim nächsten Mieterwechsel zu Sondermüll werden.</h3><ul>
+      <li><i class="ti ti-check"></i>Neuer Mieter = ein Datenupdate im Editor statt 3D-Auftrag oder Schildertausch</li>
+      <li><i class="ti ti-check"></i>Touch-Display im Eingang führt Besucher per glühender Route bis vor die Tür</li>
+      <li><i class="ti ti-check"></i>Live-Mieterverzeichnis mit Suche, Filter und Status offen/geschlossen</li>
+      <li><i class="ti ti-check"></i>Premium-Auftritt im Digital-Twin-Look, der die Vermarktung freier Flächen stützt</li>
+    </ul></div>
+    <div class="vpanel" data-p="1"><h3>Kein Erstsemester verpasst mehr die erste Vorlesung — der Campus erklärt sich von selbst.</h3><ul>
+      <li><i class="ti ti-check"></i>Turn-by-turn vom Besucherparkplatz bis zum Hörsaal — Kiosk, Tablet oder Handy</li>
+      <li><i class="ti ti-check"></i>Suche &amp; Filter über alle Räume, Lehrstühle und Sekretariate — DE/EN/FR</li>
+      <li><i class="ti ti-check"></i>Barrierefreie Routen und Notfall-Sammelplatz sichtbar integriert</li>
+      <li><i class="ti ti-check"></i>Raumumnutzung ohne Schilderaktion: einfach im Editor pflegen</li>
+    </ul></div>
+    <div class="vpanel" data-p="2"><h3>Jeder Gast steht pünktlich im richtigen Meetingraum — ganz ohne Nachfragen am Empfang.</h3><ul>
+      <li><i class="ti ti-check"></i>Besucher scannen den QR-Code und werden vom Eingang zum Meetingraum gelotst</li>
+      <li><i class="ti ti-check"></i>Flexible Pflege für ständige Team- und Firmenwechsel: setzen, ziehen, Auto-Save</li>
+      <li><i class="ti ti-check"></i>Interaktive 3D-Etagenkarte mit Kamera-Fly-to — ein Wow-Moment zur Marke</li>
+      <li><i class="ti ti-check"></i>Mehrsprachig DE/EN/FR und auf jedem Screen ohne App</li>
+    </ul></div>
+    <div class="vpanel" data-p="3"><h3>Patienten, Kunden und Bürger finden ihren Weg — ohne Stress und ohne Ihr Personal aufzuhalten.</h3><ul>
+      <li><i class="ti ti-check"></i>Klare Turn-by-turn-Führung bis zur richtigen Station, zum Shop oder Amt</li>
+      <li><i class="ti ti-check"></i>Barrierefreie Wege und Notfall-Sammelplatz fest integriert</li>
+      <li><i class="ti ti-check"></i>Suche &amp; Filter über Abteilungen, Shops oder Ämter — mehrsprachig</li>
+      <li><i class="ti ti-check"></i>Umzug oder Pop-up? Im Editor pflegen statt neu beschildern</li>
+    </ul></div>
+  </div>
 </div></section>
 
 <!-- PROOF -->
 <section class="sec" id="proof"><div class="wrap">
   <div class="proof-grid">
     <div class="reveal">
-      <div class="eyebrow">Aus der Praxis</div>
-      <p class="quote"><span class="mk">„</span>Seit Lotse im Eingang hängt, fragt am Empfang niemand mehr nach dem Weg. Neuer Mieter? Wir ändern einen Datensatz — kein 3D-Auftrag, keine Wartezeit.<span class="mk">"</span></p>
-      <div class="quote-src">— Liegenschaftsverwaltung · Multi-Mieter-Gewerbeobjekt, Aargau</div>
+      <div class="eyebrow">Das Versprechen</div>
+      <p class="quote"><span class="mk">„</span>Niemand fragt mehr nach dem Weg — und ein neuer Mieter ist ein Datensatz, kein 3D-Auftrag.<span class="mk">"</span></p>
+      <div class="quote-src">So soll sich Besucherführung anfühlen. Illustratives Szenario — Lotse ist ein junges Produkt, echte Referenzen folgen.</div>
     </div>
     <div class="proof-stats">
-      <div class="proof-stat reveal"><div class="n" data-count="30" data-prefix="−" data-suffix="%">0%</div><div class="t">Wegauskunfts-Anfragen nach Einführung digitaler Wegführung</div></div>
-      <div class="proof-stat reveal" style="--i:1"><div class="n">15–30%</div><div class="t">der Empfangs-Kapazität gehen heute für Wegauskünfte drauf</div></div>
-      <div class="proof-stat reveal" style="--i:2"><div class="n">~220k</div><div class="t">USD/Jahr Einsparpotenzial bei Grossobjekten (Spital-Studie)</div></div>
+      <div class="proof-stat reveal"><div class="n" data-count="30" data-prefix="bis −" data-suffix="%">bis −30%</div><div class="t">weniger Wegauskünfte am Empfang nach Einführung digitaler Wegführung</div></div>
+      <div class="proof-stat reveal" style="--i:1"><div class="n">5–10 Std.</div><div class="t">pro Woche, die Ihr Empfang nicht mehr mit Wegerklären verbringt</div></div>
+      <div class="proof-stat reveal" style="--i:2"><div class="n">0×</div><div class="t">3D-Aufträge pro Mieterwechsel — Pflege erledigen Sie selbst</div></div>
     </div>
   </div>
 </div></section>
@@ -590,22 +616,65 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
   <div class="reveal" style="overflow-x:auto">
     <table class="cmp">
       <thead><tr><th>Dimension</th><th class="col-l">Lotse</th><th>Klassische Anbieter</th></tr></thead>
-      <tbody id="cmpBody"></tbody>
+      <tbody id="cmpBody">
+        <tr><td class="dim">App-Download für Besucher</td><td class="col-l"><i class="ti ti-check"></i>Keiner — läuft im Browser, QR aufs Handy</td><td class="col-o"><i class="ti ti-minus"></i>Eigene App oder Blue-Dot-Erlebnis nötig</td></tr>
+        <tr><td class="dim">Hardware &amp; Infrastruktur</td><td class="col-l"><i class="ti ti-check"></i>Keine — keine Beacons, kein WLAN-Kalibrieren</td><td class="col-o"><i class="ti ti-minus"></i>BLE-Beacon-Netz, Sensorik, Vor-Ort-Installation</td></tr>
+        <tr><td class="dim">Pflege bei neuem Mieter</td><td class="col-l"><i class="ti ti-check"></i>Self-Service-Editor: Datensatz in Minuten</td><td class="col-o"><i class="ti ti-minus"></i>3D-/Beschilderungsauftrag oder Vertragsleistung</td></tr>
+        <tr><td class="dim">Einrichtung</td><td class="col-l"><i class="ti ti-check"></i>Einmaliges Setup, sofort einsatzbereit</td><td class="col-o"><i class="ti ti-minus"></i>Enterprise-Onboarding als Projekt über Wochen</td></tr>
+        <tr><td class="dim">Preis</td><td class="col-l"><i class="ti ti-check"></i>Planbarer Jahres-Flatpreis pro Liegenschaft</td><td class="col-o"><i class="ti ti-minus"></i>5'000–50'000+ CHF/Jahr, oft nur auf Anfrage</td></tr>
+        <tr><td class="dim">Optik</td><td class="col-l"><i class="ti ti-check"></i>Premium exploded-3D, glühende Route</td><td class="col-o"><i class="ti ti-minus"></i>Funktionale, meist flache 2D-Karte</td></tr>
+        <tr><td class="dim">Markt &amp; Sprache</td><td class="col-l"><i class="ti ti-check"></i>DACH/CH-nativ · DE/EN/FR</td><td class="col-o"><i class="ti ti-minus"></i>US/EN-zentriert ohne lokalen Bezug</td></tr>
+        <tr><td class="dim">Datenhoheit</td><td class="col-l"><i class="ti ti-check"></i>JSON-Export, kein Lock-in, CH/EU-Hosting</td><td class="col-o"><i class="ti ti-minus"></i>Plattform-Lock-in, Daten beim Anbieter</td></tr>
+      </tbody>
     </table>
   </div>
 </div></section>
 
 <!-- PRICING -->
 <section class="sec" id="pricing"><div class="wrap">
-  <div class="sec-head reveal"><div class="eyebrow">Preise</div><h2>Transparent, planbar, hardwarefrei</h2><p>Einmaliges Setup Ihres 3D-Areals, danach eine schlanke Jahreslizenz pro Liegenschaft — klar unter dem Wayfinding-Einstieg der Enterprise-Anbieter.</p></div>
-  <div class="prices" id="prices"></div>
+  <div class="sec-head reveal"><div class="eyebrow">Preise</div><h2>Transparent, planbar, hardwarefrei</h2><p>Einmaliges Setup Ihres 3D-Areals, danach eine schlanke Jahreslizenz pro Liegenschaft — Start <b style="color:var(--hi)">ab CHF 1'200 / Jahr</b>, klar unter dem Wayfinding-Einstieg der Enterprise-Anbieter.</p></div>
+  <div class="prices" id="prices">
+    <div class="price reveal"><div class="nm">Start</div><div class="pr">ab CHF 1'200</div><div class="tg">/ Jahr · Ein Objekt, sofort einsatzbereit</div><ul>
+      <li><i class="ti ti-check"></i>Eine Liegenschaft, 3D-Karte mit Etagen</li>
+      <li><i class="ti ti-check"></i>Mieterverzeichnis, Suche, Filter &amp; Live-Status</li>
+      <li><i class="ti ti-check"></i>Turn-by-turn-Route ab Besucherparkplatz</li>
+      <li><i class="ti ti-check"></i>QR zum Mitnehmen, Druckansicht, DE/EN/FR</li>
+      <li><i class="ti ti-check"></i>Self-Service-Editor (Marker, Wege, Auto-Save)</li>
+      <li><i class="ti ti-check"></i>CH/EU-Hosting, DSG/DSGVO-konform</li>
+    </ul><a class="btn" href="#kontakt">Kostenlose Vorschau anfragen</a></div>
+    <div class="price feat reveal" style="--i:1"><span class="badge2">Beliebt</span><div class="nm">Pro</div><div class="pr">ab CHF 2'900</div><div class="tg">/ Jahr · Für repräsentative Mehrmieter-Objekte</div><ul>
+      <li><i class="ti ti-check"></i>Alles aus Start</li>
+      <li><i class="ti ti-check"></i>Touch-Kiosk-Modus für den Eingangsbereich</li>
+      <li><i class="ti ti-check"></i>Echte Stockwerk-Grundrisse UG/EG/OG</li>
+      <li><i class="ti ti-check"></i>Barrierefreie Routen &amp; Notfall-Sammelplatz</li>
+      <li><i class="ti ti-check"></i>Umgebungs-PDF &amp; Fassaden</li>
+      <li><i class="ti ti-check"></i>Eigenes Branding (Logo, Farben)</li>
+      <li><i class="ti ti-check"></i>Persönlicher Ansprechpartner, 24 h</li>
+    </ul><a class="btn btn-pri" href="#kontakt">Kostenlose Vorschau anfragen</a></div>
+    <div class="price reveal" style="--i:2"><div class="nm">Portfolio</div><div class="pr">individuell</div><div class="tg">Mehrere Standorte &amp; Verwaltungen</div><ul>
+      <li><i class="ti ti-check"></i>Alles aus Pro</li>
+      <li><i class="ti ti-check"></i>Mehrere Liegenschaften zentral verwaltet</li>
+      <li><i class="ti ti-check"></i>Sammel-Onboarding &amp; Schulung der Teams</li>
+      <li><i class="ti ti-check"></i>JSON Export/Import für Bestands-Daten</li>
+      <li><i class="ti ti-check"></i>SLA &amp; priorisierter Support</li>
+      <li><i class="ti ti-check"></i>Mengenkonditionen pro Objekt</li>
+    </ul><a class="btn" href="#kontakt">Vertrieb kontaktieren</a></div>
+  </div>
   <p class="anchor-note reveal">Enterprise-Wayfinding startet bei <s>CHF 5'000–25'000 / Jahr</s> — plus Hardware. Lotse beginnt bei einem Bruchteil. Keine Beacons, keine versteckten Modul-Aufpreise.</p>
 </div></section>
 
 <!-- FAQ -->
 <section class="sec" id="faq"><div class="wrap">
   <div class="sec-head reveal"><div class="eyebrow">Einwände</div><h2>Was Eigentümer & Verwaltungen am häufigsten fragen</h2><p>Die ehrlichen Antworten auf die Fragen, die vor der Entscheidung kommen.</p></div>
-  <div class="faq reveal" id="faqList"></div>
+  <div class="faq reveal" id="faqList">
+    <details><summary>Das ist sicher teuer und aufwendig — wie eine individuelle 3D-Visualisierung?<i class="ti ti-plus ic"></i></summary><div class="ans">Genau das ist der Unterschied: Die teure Einzel-Visualisierung machen wir einmal. Danach pflegen Sie alles im visuellen Editor selbst — neuer Mieter = ein Datensatz, live in Sekunden, kein neuer Auftrag. Planbare Jahreskosten statt vierstelliger Einzelrechnungen pro Änderung.</div></details>
+    <details><summary>Brauchen unsere Besucher wieder eine App, die niemand installiert?<i class="ti ti-plus ic"></i></summary><div class="ans">Kein Download, nie. Lotse läuft im Browser auf jedem Screen — Touch-Kiosk im Eingang, Tablet, Desktop oder direkt auf dem Besucher-Handy per QR-Code. Antippen, Weg leuchtet auf, fertig.</div></details>
+    <details><summary>Wir haben kein IT-Team, das so etwas pflegen kann.<i class="ti ti-plus ic"></i></summary><div class="ans">Pflege ohne eine Zeile Code: Marker setzen, Wege mit der Maus zeichnen, Auto-Save. Wer ein Dokument bearbeiten kann, kann Lotse pflegen. Und das Ersteinrichten übernehmen wir komplett für Sie.</div></details>
+    <details><summary>Was passiert mit unseren und den Besucher-Daten?<i class="ti ti-plus ic"></i></summary><div class="ans">Lotse braucht keine Besucher-Daten, um zu funktionieren — kein Login, kein Tracking nötig. Betrieb DSG- und DSGVO-konform, Hosting in der Schweiz/EU. Ihren Datenstand exportieren Sie jederzeit als JSON.</div></details>
+    <details><summary>Funktioniert das wirklich in unserem konkreten Gebäude?<i class="ti ti-plus ic"></i></summary><div class="ans">Das müssen Sie nicht glauben — wir zeigen es. Wir bauen Ihnen kostenlos eine Vorschau Ihrer eigenen Liegenschaft mit einer echten Etage und Route. Sie sehen es an Ihrem Gebäude, bevor Sie sich entscheiden.</div></details>
+    <details><summary>Brauchen wir spezielle Hardware oder einen Touch-Kiosk?<i class="ti ti-plus ic"></i></summary><div class="ans">Nein. Lotse läuft auf jedem Browser-fähigen Gerät, das Sie schon haben — Tablet am Empfang, Desktop, oder das Handy des Besuchers per QR. Ein Touch-Display im Eingang ist die schönste Variante, aber keine Voraussetzung.</div></details>
+    <details><summary>Wie lange dauert das Onboarding und sind wir gebunden?<i class="ti ti-plus ic"></i></summary><div class="ans">Das Setup Ihres 3D-Areals übernehmen wir, danach sind Sie meist innert weniger Tage live. Transparente CHF-Jahreskonditionen, jederzeit kündbar — Sie gehen kein Risiko ein.</div></details>
+  </div>
 </div></section>
 
 <!-- FINAL CTA -->
@@ -646,12 +715,12 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
       <div class="foot-col"><h4>Produkt</h4><a href="#features">Funktionen</a><a href="#demo">Live-Demo</a><a href="#pricing">Preise</a><a id="footApp" href="/app">App öffnen</a><a href="/building">Echtes 3D-Gebäude (swisstopo)</a></div>
       <div class="foot-col"><h4>Anwendung</h4><a href="#usecases">Eigentümer</a><a href="#usecases">Schulen</a><a href="#usecases">Offices</a></div>
       <div class="foot-col"><h4>Kontakt</h4><a href="mailto:hello@rapold.io">hello@rapold.io</a><a href="#faq">FAQ</a><a href="#kontakt">Demo anfragen</a></div>
-      <div class="foot-col"><h4>Rechtliches</h4><a href="#">Impressum</a><a href="#">Datenschutz (DSG/DSGVO)</a></div>
+      <div class="foot-col"><h4>Rechtliches</h4><a id="lnkImp" href="/impressum">Impressum</a><a id="lnkDs" href="/datenschutz">Datenschutz (DSG/DSGVO)</a></div>
     </div>
   </div>
   <div class="wrap foot-bottom">
     <span>© 2026 Lotse · Rapold · Made in Switzerland 🇨🇭</span>
-    <span class="mono">47.286 N / 8.143 E · Gontenschwil</span>
+    <span class="mono">swissBUILDINGS3D © swisstopo · CH/EU-Hosting</span>
   </div>
 </footer>
 
@@ -672,12 +741,12 @@ const VC=[
  {seg:'Grosse Office-Standorte & Coworking',hl:'Jeder Gast steht pünktlich im richtigen Meetingraum — ganz ohne Nachfragen am Empfang.',b:['Besucher scannen den QR-Code und werden vom Eingang zum Meetingraum gelotst','Flexible Pflege für ständige Team- und Firmenwechsel: setzen, ziehen, Auto-Save','Interaktive 3D-Etagenkarte mit Kamera-Fly-to — ein Wow-Moment zur Marke','Mehrsprachig DE/EN/FR und auf jedem Screen ohne App']},
  {seg:'Spital, Einkaufszentrum & Behörde',hl:'Patienten, Kunden und Bürger finden ihren Weg — ohne Stress und ohne Ihr Personal aufzuhalten.',b:['Klare Turn-by-turn-Führung bis zur richtigen Station, zum Shop oder Amt','Barrierefreie Wege und Notfall-Sammelplatz fest integriert','Suche & Filter über Abteilungen, Shops oder Ämter — mehrsprachig','Umzug oder Pop-up? Im Editor pflegen statt neu beschildern']}
 ];
-document.getElementById('vpanels').innerHTML=VC.map((v,i)=>`<div class="vpanel${i===0?' on':''}" data-p="${i}"><h3>${v.hl}</h3><ul>${v.b.map(x=>`<li><i class="ti ti-check"></i>${x}</li>`).join('')}</ul></div>`).join('');
+/* vpanels are static HTML now */
 document.querySelectorAll('.vtab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.vtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');document.querySelectorAll('.vpanel').forEach(p=>p.classList.toggle('on',p.dataset.p===t.dataset.v));});
 
 /* comparison */
 const CMP=[['App-Download für Besucher','Keiner — läuft im Browser, QR aufs Handy','Eigene App oder Blue-Dot-Erlebnis nötig'],['Hardware & Infrastruktur','Keine — keine Beacons, kein WLAN-Kalibrieren','BLE-Beacon-Netz, Sensorik, Vor-Ort-Installation'],['Pflege bei neuem Mieter','Self-Service-Editor: Datensatz in Minuten','3D-/Beschilderungsauftrag oder Vertragsleistung'],['Einrichtung','Einmaliges Setup, sofort einsatzbereit','Enterprise-Onboarding als Projekt über Wochen'],['Preis','Planbarer Jahres-Flatpreis pro Liegenschaft','5’000–50’000+ CHF/Jahr, oft nur auf Anfrage'],['Optik','Premium exploded-3D, glühende Route','Funktionale, meist flache 2D-Karte'],['Markt & Sprache','DACH/CH-nativ · DE/EN/FR','US/EN-zentriert ohne lokalen Bezug'],['Datenhoheit','JSON-Export, kein Lock-in, CH/EU-Hosting','Plattform-Lock-in, Daten beim Anbieter']];
-document.getElementById('cmpBody').innerHTML=CMP.map(r=>`<tr><td class="dim">${r[0]}</td><td class="col-l"><i class="ti ti-check"></i>${r[1]}</td><td class="col-o"><i class="ti ti-minus"></i>${r[2]}</td></tr>`).join('');
+/* comparison rows are static HTML now */
 
 /* pricing */
 const TIERS=[
@@ -685,7 +754,7 @@ const TIERS=[
  {nm:'Pro',pr:"ab CHF 2'900",per:'/ Jahr',tg:'Für repräsentative Mehrmieter-Objekte',feat:true,cta:'Termin buchen',f:['Alles aus Start','Touch-Kiosk-Modus für den Eingangsbereich','Echte Stockwerk-Grundrisse UG/EG/OG','Barrierefreie Routen & Notfall-Sammelplatz','Umgebungs-PDF & Fassaden','Eigenes Branding (Logo, Farben)','Persönlicher Ansprechpartner, 24 h']},
  {nm:'Portfolio',pr:'individuell',per:'',tg:'Mehrere Standorte & Verwaltungen',feat:false,cta:'Vertrieb kontaktieren',f:['Alles aus Pro','Mehrere Liegenschaften zentral verwaltet','Sammel-Onboarding & Schulung der Teams','JSON Export/Import für Bestands-Daten','SLA & priorisierter Support','Mengenkonditionen pro Objekt']}
 ];
-document.getElementById('prices').innerHTML=TIERS.map((t,i)=>`<div class="price${t.feat?' feat':''} reveal" style="--i:${i}">${t.feat?'<span class="badge2">Beliebt</span>':''}<div class="nm">${t.nm}</div><div class="pr">${t.pr}</div><div class="tg">${t.per} · ${t.tg}</div><ul>${t.f.map(x=>`<li><i class="ti ti-check"></i>${x}</li>`).join('')}</ul><a class="btn ${t.feat?'btn-pri':''}" href="#kontakt">${t.cta}</a></div>`).join('');
+/* pricing cards are static HTML now */
 
 /* faq */
 const FAQ=[
@@ -697,11 +766,13 @@ const FAQ=[
  ['Brauchen wir spezielle Hardware oder einen Touch-Kiosk?','Nein. Lotse läuft auf jedem Browser-fähigen Gerät, das Sie schon haben — Tablet am Empfang, Desktop, oder das Handy des Besuchers per QR. Ein Touch-Display im Eingang ist die schönste Variante, aber keine Voraussetzung.'],
  ['Wie lange dauert das Onboarding und sind wir gebunden?','Das Setup Ihres 3D-Areals übernehmen wir, danach sind Sie meist innert weniger Tage live. Transparente CHF-Jahreskonditionen, jederzeit kündbar — Sie gehen kein Risiko ein.']
 ];
-document.getElementById('faqList').innerHTML=FAQ.map(f=>`<details><summary>${f[0]}<i class="ti ti-plus ic"></i></summary><div class="ans">${f[1]}</div></details>`).join('');
+/* faq is static HTML now */
 
 /* demo links (kein iframe) */
 const BUILD_URL=(location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.port==='4321')?'/apps/building/index.html':'/building';
-{const _db=document.getElementById('demoBuilding');if(_db)_db.href=BUILD_URL;const _da=document.getElementById('demoApp');if(_da)_da.href=APP_URL;}
+{const _db=document.getElementById('demoBuilding');if(_db)_db.href=BUILD_URL;const _da=document.getElementById('demoApp');if(_da)_da.href=APP_URL;
+ const loc=(location.port==='4321'||location.hostname.includes('localhost'));
+ if(loc){const i=document.getElementById('lnkImp'),d=document.getElementById('lnkDs');if(i)i.href='/apps/legal/impressum.html';if(d)d.href='/apps/legal/datenschutz.html';}}
 
 /* nav scroll + sticky cta */
 const nav=document.getElementById('nav'),sticky=document.getElementById('stickyCta');
