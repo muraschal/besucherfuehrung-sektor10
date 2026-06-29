@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://besucherfuehrung-sektor10.vercel.app/sitemap.xml
+Sitemap: https://lotse.rapold.io/sitemap.xml

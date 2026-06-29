@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://besucherfuehrung-sektor10.vercel.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://besucherfuehrung-sektor10.vercel.app/app</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://besucherfuehrung-sektor10.vercel.app/building</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://besucherfuehrung-sektor10.vercel.app/impressum</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://besucherfuehrung-sektor10.vercel.app/datenschutz</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://lotse.rapold.io/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://lotse.rapold.io/app</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lotse.rapold.io/building</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://lotse.rapold.io/impressum</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://lotse.rapold.io/datenschutz</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

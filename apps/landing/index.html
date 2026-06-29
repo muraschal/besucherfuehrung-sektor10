@@ -2,24 +2,26 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2322d3ee'/><text x='16' y='23' font-size='20' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%2304222a'>L</text></svg>">
 <title>Lotse — Jeder Besucher findet den Weg. Vom Parkplatz bis zur Tür.</title>
 <meta name="description" content="Lotse ist die digitale Besucherführung für Ihr Areal — eine interaktive 3D-Karte im Browser, die jeden Besucher vom Parkplatz bis zur richtigen Tür führt. Ohne App, ohne Build.">
 <meta property="og:title" content="Lotse — Digitale Besucherführung">
 <meta property="og:description" content="Interaktive 3D-Karte, Live-Mieterverzeichnis, glühende Route. Im Browser, auf jedem Screen, ohne App.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Lotse">
-<meta property="og:url" content="https://besucherfuehrung-sektor10.vercel.app/">
-<meta property="og:image" content="https://besucherfuehrung-sektor10.vercel.app/og.svg">
+<meta property="og:url" content="https://lotse.rapold.io/">
+<meta property="og:image" content="https://lotse.rapold.io/og.svg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Lotse — Digitale Besucherführung">
 <meta name="twitter:description" content="Interaktive 3D-Karte, Live-Mieterverzeichnis, glühende Route. Im Browser, ohne App.">
-<meta name="twitter:image" content="https://besucherfuehrung-sektor10.vercel.app/og.svg">
-<link rel="canonical" href="https://besucherfuehrung-sektor10.vercel.app/">
+<meta name="twitter:image" content="https://lotse.rapold.io/og.svg">
+<link rel="canonical" href="https://lotse.rapold.io/">
 <meta name="theme-color" content="#0a0b0e">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -28,7 +30,7 @@
   --line-faint:rgba(255,255,255,.06);--line:rgba(255,255,255,.10);--line-strong:rgba(255,255,255,.16);
   --cyan:#22d3ee;--cyan-br:#67e8f9;--cyan-deep:#0e7490;--cyan-glow:rgba(34,211,238,.45);--violet:#7c5cff;
   --open:#34d399;--closed:#f43f5e;
-  --hi:#f4f6fb;--mid:#a6adbb;--low:#6b7280;
+  --hi:#f4f6fb;--mid:#aeb6c4;--low:#8b93a1;
   --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
   --max:1180px;--rad:14px;
   --glow-btn:0 0 24px rgba(34,211,238,.4);
@@ -299,13 +301,13 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
 .foot-in{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
 .foot-brand{max-width:300px}.foot-brand p{color:var(--mid);font-size:14px;margin-top:14px}
 .foot-cols{display:flex;gap:52px;flex-wrap:wrap}
-.foot-col h4{font-size:12px;color:var(--low);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;font-weight:600;font-family:var(--mono)}
+.foot-col .fh{font-size:12px;color:var(--mid);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;font-weight:600;font-family:var(--mono)}
 .foot-col a{display:block;color:var(--mid);font-size:14px;padding:5px 0;transition:color .15s}.foot-col a:hover{color:var(--cyan)}
 .foot-bottom{margin-top:44px;padding-top:22px;border-top:1px solid var(--line-faint);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--low);font-size:13px;align-items:center}
 .foot-bottom .mono{font-size:11.5px;letter-spacing:.04em}
 
 /* sticky cta */
-.sticky-cta{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(120px);z-index:55;transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.sticky-cta{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(160px);z-index:55;transition:transform .4s cubic-bezier(.16,1,.3,1)}
 .sticky-cta.show{transform:translateX(-50%) translateY(0)}
 .sticky-cta .btn{box-shadow:0 10px 40px -8px rgba(0,0,0,.6),var(--glow-btn)}
 
@@ -333,7 +335,9 @@ footer{border-top:1px solid var(--line-faint);padding:54px 0 40px;margin-top:80p
 .mobnav .close{position:absolute;top:20px;right:24px;background:none;border:none;color:var(--hi);font-size:28px;cursor:pointer}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
 /* ===== Mobile-Optimierung (Deep-Research) ===== */
-html{overflow-x:hidden}
+html{overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+*{-webkit-tap-highlight-color:rgba(34,211,238,.18)}
+a,button,summary,.btn,input,.vtab,.demo-card{touch-action:manipulation}
 .stage-glow{inset:-8% 0 6% 0}
 .hero-poster{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0a0b0e}
 .hero-poster svg{width:90%;height:auto;max-height:100%}
@@ -350,6 +354,9 @@ html{overflow-x:hidden}
   .burger{width:44px;height:44px}
   .btn{min-height:44px;white-space:normal;text-align:center}
   .sec{padding:clamp(56px,9vh,96px) 0}
+  .sticky-cta{left:12px;right:12px;transform:translateY(160px)}
+  .sticky-cta.show{transform:translateY(0)}
+  .sticky-cta .btn{width:100%;justify-content:center;box-shadow:0 10px 40px -8px rgba(0,0,0,.7),var(--glow-btn)}
 }
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 </style>
@@ -423,6 +430,7 @@ html{overflow-x:hidden}
   </div>
 </div></header>
 
+<main>
 <!-- TRUST BAR -->
 <div class="trust"><div class="wrap trust-in">
   <div class="coord">3D-Geometrie: reales Referenzgebäude · swissBUILDINGS3D © swisstopo · live gerendert</div>
@@ -566,7 +574,7 @@ html{overflow-x:hidden}
         <div class="ed-mk" style="top:46%;left:30%"><span class="pin" style="background:#fb923c"></span><span class="tag">R. Steiner AG</span></div>
         <div class="ed-mk" style="top:28%;left:55%"><span class="pin" style="background:#22d3ee"></span><span class="tag">Eingang West</span></div>
         <div class="ed-mk" style="top:66%;left:58%"><span class="pin" style="background:#94a3b8"></span><span class="tag">Parkplatz</span></div>
-        <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"><path d="M62% 70% Q 55% 50% 33% 48%" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="7,6" opacity=".8"/></svg>
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"><path d="M62 70 Q 52 52 33 48" fill="none" stroke="#22d3ee" stroke-width="0.7" stroke-dasharray="2.5,2" opacity=".8"/></svg>
         <div class="ed-panel"><div class="h">Marker</div><div class="f"></div><div class="f cy"></div><div style="display:flex;gap:5px;margin:6px 0"><span style="width:14px;height:14px;border-radius:4px;background:#22d3ee"></span><span style="width:14px;height:14px;border-radius:4px;background:#fb923c"></span><span style="width:14px;height:14px;border-radius:4px;background:#34d399"></span></div><div class="b"></div></div>
       </div>
     </div>
@@ -724,9 +732,9 @@ html{overflow-x:hidden}
     </div>
     <form class="form" id="leadForm" onsubmit="return submitLead(event)">
       <div class="form-fields">
-        <label for="f-name">Name</label><input id="f-name" name="name" required placeholder="Vor- und Nachname">
-        <label for="f-org">Liegenschaft / Organisation</label><input id="f-org" name="org" required placeholder="Objekt, Schule oder Firma">
-        <label for="f-mail">E-Mail</label><input id="f-mail" name="email" type="email" required placeholder="name@firma.ch">
+        <label for="f-name">Name</label><input id="f-name" name="name" required autocomplete="name" autocapitalize="words" enterkeyhint="next" placeholder="Vor- und Nachname">
+        <label for="f-org">Liegenschaft / Organisation</label><input id="f-org" name="org" required autocomplete="organization" enterkeyhint="next" placeholder="Objekt, Schule oder Firma">
+        <label for="f-mail">E-Mail</label><input id="f-mail" name="email" type="email" required inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="name@firma.ch">
         <input class="hp" tabindex="-1" autocomplete="off" name="website" aria-hidden="true">
         <button class="btn btn-pri" type="submit"><i class="ti ti-send"></i>Kostenlose Vorschau anfragen</button>
         <p style="font-size:12px;color:var(--low);margin-top:12px;text-align:center">Kostenlose 3D-Vorschau in 48 h — unverbindlich, ohne Vertrag. Pro Quartal nur eine begrenzte Zahl neuer Liegenschaften.</p>
@@ -736,6 +744,8 @@ html{overflow-x:hidden}
   </div></div>
 </div></section>
 
+</main>
+
 <footer>
   <div class="wrap foot-in">
     <div class="foot-brand">
@@ -743,10 +753,10 @@ html{overflow-x:hidden}
       <p>Jeder findet den Weg. Digitale Besucherführung für Gebäude, Areale und Campus — im Browser, ohne App.</p>
     </div>
     <div class="foot-cols">
-      <div class="foot-col"><h4>Produkt</h4><a href="#features">Funktionen</a><a href="#demo">Live-Demo</a><a href="#pricing">Preise</a><a id="footApp" href="/app">App öffnen</a><a href="/building">Echtes 3D-Gebäude (swisstopo)</a></div>
-      <div class="foot-col"><h4>Anwendung</h4><a href="#usecases">Eigentümer</a><a href="#usecases">Schulen</a><a href="#usecases">Offices</a></div>
-      <div class="foot-col"><h4>Kontakt</h4><a href="mailto:hello@rapold.io">hello@rapold.io</a><a href="#faq">FAQ</a><a href="#kontakt">Demo anfragen</a></div>
-      <div class="foot-col"><h4>Rechtliches</h4><a id="lnkImp" href="/impressum">Impressum</a><a id="lnkDs" href="/datenschutz">Datenschutz (DSG/DSGVO)</a></div>
+      <div class="foot-col"><div class="fh">Produkt</div><a href="#features">Funktionen</a><a href="#demo">Live-Demo</a><a href="#pricing">Preise</a><a id="footApp" href="/app">App öffnen</a><a href="/building">Echtes 3D-Gebäude (swisstopo)</a></div>
+      <div class="foot-col"><div class="fh">Anwendung</div><a href="#usecases">Eigentümer</a><a href="#usecases">Schulen</a><a href="#usecases">Offices</a></div>
+      <div class="foot-col"><div class="fh">Kontakt</div><a href="mailto:hello@rapold.io">hello@rapold.io</a><a href="#faq">FAQ</a><a href="#kontakt">Demo anfragen</a></div>
+      <div class="foot-col"><div class="fh">Rechtliches</div><a id="lnkImp" href="/impressum">Impressum</a><a id="lnkDs" href="/datenschutz">Datenschutz (DSG/DSGVO)</a></div>
     </div>
   </div>
   <div class="wrap foot-bottom">
@@ -830,12 +840,12 @@ function submitLead(e){e.preventDefault();const f=e.target;if(f.website.value){r
 </script>
 <script type="module">
 try{
-  const THREE=await import('three');
-  const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
   const canvas=document.getElementById('heroCanvas');
   const isMobile=innerWidth<=720||matchMedia('(prefers-reduced-motion:reduce)').matches;
   if(canvas&&isMobile){canvas.style.display='none';}
   if(canvas&&!isMobile){
+    const THREE=await import('three');
+    const {OrbitControls}=await import('three/addons/controls/OrbitControls.js');
     const poster=document.getElementById('heroPoster');if(poster)poster.style.display='none';
     const data=await fetch('/apps/building/building.json').then(r=>r.json());
     const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
